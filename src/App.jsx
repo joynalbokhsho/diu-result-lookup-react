@@ -14,12 +14,18 @@ function App() {
   const [result, setResult] = useState(null);
   const [studentId, setStudentId] = useState('');
   const [semesterId, setSemesterId] = useState('');
-  const [studentInfo, setStudentInfo] = useState(null);
+  // Removed unused studentInfo state variable
 
   const fetchStudentInfo = async (id) => {
     try {
       console.log(`Fetching student info for ID: ${id}`);
-      const response = await fetch(`http://peoplepulse.diu.edu.bd:8189/result/studentInfo?studentId=${id}`);
+      const response = await fetch(`https://peoplepulse.diu.edu.bd:8189/result/studentInfo?studentId=${id}`, {
+        method: 'GET',
+        mode: 'cors',
+        headers: {
+          'Accept': 'application/json'
+        }
+      });
       
       if (!response.ok) {
         console.warn('Student info API returned an error:', response.status);
@@ -27,7 +33,8 @@ function App() {
       }
       
       const data = await response.json();
-      console.log('Student info received:', data);
+      // Log the exact structure of the received data to debug
+      console.log('Student info response structure:', JSON.stringify(data));
       return data;
     } catch (err) {
       console.warn('Error fetching student info:', err.message);
@@ -40,7 +47,6 @@ function App() {
     setLoading(true);
     setError('');
     setResult(null);
-    setStudentInfo(null);
     
     // Log search attempt to help with debugging
     console.log(`Searching for student: ${studentId}, semester: ${semesterId}`);
@@ -109,20 +115,17 @@ function App() {
       
       const semesterGpa = totalCredits > 0 ? (totalPoints / totalCredits).toFixed(2) : 0;
       
-      // Store student info
-      if (studentInfoData) {
-        setStudentInfo(studentInfoData);
-      }
-      
       setResult({
         studentInfo: {
           id: firstItem.studentId,
           // Use student info API data if available, otherwise default values
-          name: studentInfoData ? studentInfoData.studentName : "Not Available",
-          program: studentInfoData ? `${studentInfoData.programName} (${studentInfoData.progShortName})` : "Not Available",
-          batch: studentInfoData ? studentInfoData.batchNo : "Not Available",
-          department: studentInfoData ? studentInfoData.departmentName : "Not Available",
-          faculty: studentInfoData ? studentInfoData.facultyName : "Not Available"
+          name: studentInfoData?.data?.studentName || "Not Available",
+          program: studentInfoData?.data ? 
+            `${studentInfoData.data.programName || ""} ${studentInfoData.data.progShortName ? `(${studentInfoData.data.progShortName})` : ""}` : 
+            "Not Available",
+          batch: studentInfoData?.data?.batchNo || "Not Available",
+          department: studentInfoData?.data?.departmentName || "Not Available",
+          faculty: studentInfoData?.data?.facultyName || "Not Available"
         },
         semester: {
           id: firstItem.semesterId,
