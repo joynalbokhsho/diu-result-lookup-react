@@ -1,5 +1,5 @@
 import React from 'react';
-import { FaPrint, FaSearch, FaStar, FaGraduationCap, FaUserGraduate, FaClipboardList, FaUniversity } from 'react-icons/fa';
+import { FaPrint, FaSearch, FaStar, FaGraduationCap, FaUserGraduate, FaClipboardList } from 'react-icons/fa';
 
 const ResultSection = ({ result, onPrint, onNewSearch }) => {
   // Function to determine motivational message based on GPA
