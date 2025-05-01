@@ -148,8 +148,8 @@ const ResultSection = ({ result, onPrint, onNewSearch }) => {
                   <th>Course Code</th>
                   <th>Course Title</th>
                   <th>Credit</th>
-                  <th>Grade</th>
                   <th>Grade Point</th>
+                  <th>Grade</th>
                 </tr>
               </thead>
               <tbody>
@@ -162,8 +162,8 @@ const ResultSection = ({ result, onPrint, onNewSearch }) => {
                         <div className="course-motivation">{getGradeMessage(course.grade)}</div>
                       </td>
                       <td>{course.credit.toFixed(1)}</td>
-                      <td>{course.grade}</td>
                       <td>{course.gradePoint.toFixed(2)}</td>
+                      <td>{course.grade}</td>
                     </tr>
                   </React.Fragment>
                 ))}
