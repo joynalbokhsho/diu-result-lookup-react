@@ -2,7 +2,7 @@
   "name": "diu-result-lookup",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://joynalbokhsho.github.io/diu-result-lookup-react",
+  "homepage": "/",
   "dependencies": {
     "bootstrap": "^5.3.0",
     "react": "^18.2.0",
