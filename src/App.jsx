@@ -19,7 +19,22 @@ function App() {
   const fetchStudentInfo = async (id) => {
     try {
       console.log(`Fetching student info for ID: ${id}`);
-      const response = await fetch(`http://peoplepulse.diu.edu.bd:8189/result/studentInfo?studentId=${id}`, {
+      
+      // Check if we're on HTTPS - if so, we'll use a CORS proxy or fallback smoothly
+      const isHttps = window.location.protocol === 'https:';
+      let apiUrl = `http://peoplepulse.diu.edu.bd:8189/result/studentInfo?studentId=${id}`;
+      
+      // For HTTPS environments, try using a CORS proxy or handle gracefully
+      if (isHttps) {
+        // Option 1: Try using a CORS proxy (example using cors-anywhere, but you'll need to deploy your own)
+        // apiUrl = `https://your-cors-proxy.herokuapp.com/${apiUrl}`;
+        
+        // Option 2: Fall back gracefully - we'll use a fallback method in this case
+        console.log('HTTPS detected: Cannot make direct HTTP request to student info API. Using fallback method.');
+        return null;
+      }
+      
+      const response = await fetch(apiUrl, {
         method: 'GET',
         mode: 'cors',
         headers: {
@@ -33,13 +48,30 @@ function App() {
       }
       
       const data = await response.json();
-      // Log the exact structure of the received data to debug
       console.log('Student info response structure:', JSON.stringify(data));
       return data;
     } catch (err) {
       console.warn('Error fetching student info:', err.message);
       return null;
     }
+  };
+
+  const extractStudentInfoFromResults = (resultData) => {
+    if (!resultData || !Array.isArray(resultData) || resultData.length === 0) return null;
+    
+    // Get the first item for base information
+    const firstItem = resultData[0];
+    
+    // Try to extract as much information as possible from the result data
+    return {
+      studentId: firstItem.studentId,
+      studentName: firstItem.studentName || "Not Available",
+      programName: firstItem.programName || "Not Available",
+      progShortName: firstItem.progShortName || "",
+      batchNo: firstItem.batchNo || firstItem.batchId || "Not Available",
+      departmentName: firstItem.departmentName || "Not Available",
+      facultyName: firstItem.facultyName || "Not Available"
+    };
   };
 
   const handleSearch = async (e) => {
@@ -118,14 +150,14 @@ function App() {
       setResult({
         studentInfo: {
           id: firstItem.studentId,
-          // Use student info API data if available, otherwise default values
-          name: studentInfoData?.studentName || "Not Available",
+          // Use student info API data if available, otherwise fallback to extracting from results
+          name: studentInfoData?.studentName || extractStudentInfoFromResults(data)?.studentName || "Not Available",
           program: studentInfoData ? 
             `${studentInfoData.programName || ""} ${studentInfoData.progShortName ? `(${studentInfoData.progShortName})` : ""}` : 
-            "Not Available",
-          batch: studentInfoData?.batchNo || "Not Available",
-          department: studentInfoData?.departmentName || "Not Available",
-          faculty: studentInfoData?.facultyName || "Not Available"
+            `${extractStudentInfoFromResults(data)?.programName || ""} ${extractStudentInfoFromResults(data)?.progShortName ? `(${extractStudentInfoFromResults(data)?.progShortName})` : ""}` || "Not Available",
+          batch: studentInfoData?.batchNo || extractStudentInfoFromResults(data)?.batchNo || "Not Available",
+          department: studentInfoData?.departmentName || extractStudentInfoFromResults(data)?.departmentName || "Not Available",
+          faculty: studentInfoData?.facultyName || extractStudentInfoFromResults(data)?.facultyName || "Not Available"
         },
         semester: {
           id: firstItem.semesterId,
