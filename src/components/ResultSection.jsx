@@ -1,5 +1,5 @@
 import React from 'react';
-import { FaPrint, FaSearch, FaStar, FaGraduationCap, FaUserGraduate, FaClipboardList } from 'react-icons/fa';
+import { FaPrint, FaSearch, FaStar, FaGraduationCap, FaUserGraduate, FaClipboardList, FaUniversity } from 'react-icons/fa';
 
 const ResultSection = ({ result, onPrint, onNewSearch }) => {
   // Function to determine motivational message based on GPA
@@ -37,7 +37,7 @@ const ResultSection = ({ result, onPrint, onNewSearch }) => {
       case 'D':
         return "Minimal passing performance!";
       default:
-        return "Keep working to improve!";
+        return "";
     }
   };
 
@@ -94,8 +94,20 @@ const ResultSection = ({ result, onPrint, onNewSearch }) => {
                 </div>
                 <div className="col-md-6">
                   <div className="info-item">
+                    <div className="info-label">Department</div>
+                    <div className="info-value">{result.studentInfo.departmentName || 'Not Available'}</div>
+                  </div>
+                </div>
+                <div className="col-md-6">
+                  <div className="info-item">
                     <div className="info-label">Batch</div>
                     <div className="info-value">{result.studentInfo.batch}</div>
+                  </div>
+                </div>
+                <div className="col-md-6">
+                  <div className="info-item">
+                    <div className="info-label">Faculty</div>
+                    <div className="info-value">{result.studentInfo.facultyName || 'Not Available'}</div>
                   </div>
                 </div>
               </div>

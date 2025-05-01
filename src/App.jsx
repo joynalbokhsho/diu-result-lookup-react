@@ -30,8 +30,48 @@ function App() {
         throw new Error('Please provide both Student ID and Semester.');
       }
 
-      // Actual API call to the provided endpoint
-      console.log('Fetching data from API...');
+      // First fetch student info from the new API endpoint
+      console.log('Fetching student info from API...');
+      const studentInfoResponse = await fetch(`https://student-proxy.onrender.com/api/studentInfo?studentId=${studentId}`)
+        .catch(fetchError => {
+          console.error('Student info fetch error:', fetchError);
+          // Don't throw an error here, we'll continue with the results fetch
+          console.log('Continuing with results fetch despite student info error');
+          return { ok: false };
+        });
+      
+      // Initialize studentInfo with default values
+      let studentInfo = {
+        id: studentId,
+        name: "Not Available",
+        program: "Not Available",
+        batch: "Not Available"
+      };
+      
+      // If student info API call was successful, update the studentInfo object
+      if (studentInfoResponse && studentInfoResponse.ok) {
+        try {
+          const studentData = await studentInfoResponse.json();
+          console.log('Student info data received:', studentData);
+          
+          if (studentData) {
+            studentInfo = {
+              id: studentId,
+              name: studentData.studentName || "Not Available",
+              program: studentData.programName || "Not Available",
+              batch: studentData.batchId || "Not Available",
+              departmentName: studentData.deptShortName || "Not Available", // Changed from departmentName to deptShortName
+              facultyName: studentData.facultyName || "Not Available"
+            };
+          }
+        } catch (jsonError) {
+          console.error('Student info JSON parsing error:', jsonError);
+          // Continue with default studentInfo values
+        }
+      }
+
+      // Now fetch the actual results
+      console.log('Fetching results data from API...');
       const response = await fetch(`https://diurecords.vercel.app/api/result?grecaptcha=&semesterId=${semesterId}&studentId=${studentId}`)
         .catch(fetchError => {
           console.error('Fetch error:', fetchError);
@@ -85,12 +125,7 @@ function App() {
       const semesterGpa = totalCredits > 0 ? (totalPoints / totalCredits).toFixed(2) : 0;
       
       setResult({
-        studentInfo: {
-          id: firstItem.studentId,
-          name: "Not Available",  // API doesn't provide student name
-          program: "Not Available",  // API doesn't provide program
-          batch: "Not Available"  // API doesn't provide batch
-        },
+        studentInfo: studentInfo, // Now using the enhanced studentInfo object
         semester: {
           id: firstItem.semesterId,
           name: `${firstItem.semesterName} ${firstItem.semesterYear}`,
