@@ -48,14 +48,6 @@ const ResultSection = ({ result, onPrint, onNewSearch }) => {
     day: 'numeric'
   });
 
-  // Helper function to safely format numbers with toFixed
-  const safeToFixed = (value, decimals = 2) => {
-    if (value === null || value === undefined || isNaN(value)) {
-      return 'N/A';
-    }
-    return Number(value).toFixed(decimals);
-  };
-
   return (
     <section className="result-section">
       <div className="result-header">
@@ -130,13 +122,13 @@ const ResultSection = ({ result, onPrint, onNewSearch }) => {
                 <div className="col-md-6 col-lg-12">
                   <div className="info-item">
                     <div className="info-label">Semester GPA</div>
-                    <div className="info-value cgpa">{safeToFixed(result.semester.gpa)}</div>
+                    <div className="info-value cgpa">{result.semester.gpa.toFixed(2)}</div>
                   </div>
                 </div>
                 <div className="col-md-6 col-lg-12">
                   <div className="info-item">
                     <div className="info-label">Overall CGPA</div>
-                    <div className="info-value cgpa">{safeToFixed(result.cgpa)}</div>
+                    <div className="info-value cgpa">{result.cgpa.toFixed(2)}</div>
                   </div>
                 </div>
                 <div className="col-md-6 col-lg-12">
@@ -185,8 +177,8 @@ const ResultSection = ({ result, onPrint, onNewSearch }) => {
                         {course.title}
                         <div className="course-motivation">{getGradeMessage(course.grade)}</div>
                       </td>
-                      <td>{safeToFixed(course.credit, 1)}</td>
-                      <td>{safeToFixed(course.gradePoint)}</td>
+                      <td>{course.credit.toFixed(1)}</td>
+                      <td>{course.gradePoint.toFixed(2)}</td>
                       <td>{course.grade}</td>
                     </tr>
                   </React.Fragment>
@@ -201,7 +193,7 @@ const ResultSection = ({ result, onPrint, onNewSearch }) => {
       <div className="motivational-container">
         <p className="motivational-message-overall">
           <FaStar style={{ color: '#ffc107' }} />
-          {getMotivationalMessage(result.semester.gpa || 0)}
+          {getMotivationalMessage(result.semester.gpa)}
         </p>
       </div>
       
