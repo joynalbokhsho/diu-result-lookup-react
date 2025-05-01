@@ -19,7 +19,7 @@ function App() {
   const fetchStudentInfo = async (id) => {
     try {
       console.log(`Fetching student info for ID: ${id}`);
-      const response = await fetch(`https://peoplepulse.diu.edu.bd:8189/result/studentInfo?studentId=${id}`, {
+      const response = await fetch(`http://peoplepulse.diu.edu.bd:8189/result/studentInfo?studentId=${id}`, {
         method: 'GET',
         mode: 'cors',
         headers: {
@@ -119,13 +119,13 @@ function App() {
         studentInfo: {
           id: firstItem.studentId,
           // Use student info API data if available, otherwise default values
-          name: studentInfoData?.data?.studentName || "Not Available",
-          program: studentInfoData?.data ? 
-            `${studentInfoData.data.programName || ""} ${studentInfoData.data.progShortName ? `(${studentInfoData.data.progShortName})` : ""}` : 
+          name: studentInfoData?.studentName || "Not Available",
+          program: studentInfoData ? 
+            `${studentInfoData.programName || ""} ${studentInfoData.progShortName ? `(${studentInfoData.progShortName})` : ""}` : 
             "Not Available",
-          batch: studentInfoData?.data?.batchNo || "Not Available",
-          department: studentInfoData?.data?.departmentName || "Not Available",
-          faculty: studentInfoData?.data?.facultyName || "Not Available"
+          batch: studentInfoData?.batchNo || "Not Available",
+          department: studentInfoData?.departmentName || "Not Available",
+          faculty: studentInfoData?.facultyName || "Not Available"
         },
         semester: {
           id: firstItem.semesterId,
