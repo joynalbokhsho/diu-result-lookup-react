@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import FeaturesSection from './components/FeaturesSection';
@@ -21,6 +21,9 @@ function App() {
     setError('');
     setResult(null);
     
+    // Log search attempt to help with debugging
+    console.log(`Searching for student: ${studentId}, semester: ${semesterId}`);
+    
     try {
       // Validate inputs before making the API call
       if (!studentId.trim() || !semesterId.trim()) {
@@ -28,22 +31,42 @@ function App() {
       }
 
       // Actual API call to the provided endpoint
-      const response = await fetch(`https://diurecords.vercel.app/api/result?grecaptcha=&semesterId=${semesterId}&studentId=${studentId}`);
+      console.log('Fetching data from API...');
+      const response = await fetch(`https://diurecords.vercel.app/api/result?grecaptcha=&semesterId=${semesterId}&studentId=${studentId}`)
+        .catch(fetchError => {
+          console.error('Fetch error:', fetchError);
+          throw new Error('Network error. Please check your connection and try again.');
+        });
       
       if (!response.ok) {
-        throw new Error('Failed to fetch results. The server might be down or experiencing issues.');
+        console.error('Response not OK:', response.status, response.statusText);
+        throw new Error(`Failed to fetch results (Status: ${response.status}). The server might be down or experiencing issues.`);
       }
       
       let data;
       try {
+        console.log('Parsing JSON response...');
         data = await response.json();
+        console.log('Data received:', data ? 'Data exists' : 'No data');
       } catch (jsonError) {
         // This specifically catches JSON parsing errors
+        console.error('JSON parsing error:', jsonError);
         throw new Error('The server returned an invalid response. The DIU result server may be down.');
       }
       
       // Check for empty data more thoroughly
-      if (!data || !Array.isArray(data) || data.length === 0) {
+      if (!data) {
+        console.error('Data is null or undefined');
+        throw new Error(`No results found for Student ID: ${studentId} in the selected semester.`);
+      }
+      
+      if (!Array.isArray(data)) {
+        console.error('Data is not an array:', typeof data);
+        throw new Error(`Invalid response format. Please try again later.`);
+      }
+      
+      if (data.length === 0) {
+        console.error('Data array is empty');
         throw new Error(`No results found for Student ID: ${studentId} in the selected semester.`);
       }
       
@@ -83,6 +106,8 @@ function App() {
         cgpa: firstItem.cgpa
       });
     } catch (err) {
+      console.error('Error caught in handleSearch:', err.message);
+      
       // Create a user-friendly error message
       let userMessage = 'An error occurred while fetching results. The server might be down.';
       
@@ -91,10 +116,13 @@ function App() {
         userMessage = 'The DIU result server is currently unavailable or experiencing issues.';
       } else if (err.message.includes('No results found')) {
         userMessage = err.message;
+      } else if (err.message.includes('Network error')) {
+        userMessage = 'Cannot connect to the DIU server. Please check your internet connection.';
       } else if (err.message) {
         userMessage = err.message;
       }
       
+      console.log('Setting error message:', userMessage);
       setError(userMessage);
       // Ensure result is null when there's an error
       setResult(null);
@@ -118,6 +146,26 @@ function App() {
     window.print();
   };
 
+  // Add error boundary effect
+  useEffect(() => {
+    // Global error handler for fetch and promise errors
+    const handleGlobalError = (event) => {
+      console.error('Global error caught:', event);
+      if (!error) {
+        setError('An unexpected error occurred. Please try again later.');
+      }
+      event.preventDefault();
+    };
+
+    window.addEventListener('error', handleGlobalError);
+    window.addEventListener('unhandledrejection', handleGlobalError);
+    
+    return () => {
+      window.removeEventListener('error', handleGlobalError);
+      window.removeEventListener('unhandledrejection', handleGlobalError);
+    };
+  }, [error]);
+
   return (
     <div className="app-container">
       <Navbar />
@@ -130,14 +178,15 @@ function App() {
       />
       
       <div className="container my-4">
-        {loading && <LoadingIndicator />}
+        {/* Always show error if it exists, regardless of other states */}
         {error && <ErrorContainer message={error} onRetry={handleRetry} />}
-        {result && <ResultSection result={result} onPrint={handlePrint} onNewSearch={handleNewSearch} />}
+        {loading && <LoadingIndicator />}
+        {!error && result && <ResultSection result={result} onPrint={handlePrint} onNewSearch={handleNewSearch} />}
       </div>
       
-      {!loading && !error && !result && (
-        <FeaturesSection />
-      )}
+      {/* Always show features section regardless of result state */}
+      <FeaturesSection />
+      
       <Footer />
     </div>
   );
