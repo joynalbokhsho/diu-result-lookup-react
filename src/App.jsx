@@ -29,7 +29,13 @@ function App() {
         throw new Error('Failed to fetch results. The server might be down or experiencing issues.');
       }
       
-      const data = await response.json();
+      let data;
+      try {
+        data = await response.json();
+      } catch (jsonError) {
+        // This specifically catches JSON parsing errors
+        throw new Error('The server returned an invalid response. The DIU result server may be down.');
+      }
       
       if (!data || data.length === 0) {
         throw new Error('No results found for the given student ID and semester.');
@@ -71,7 +77,17 @@ function App() {
         cgpa: firstItem.cgpa
       });
     } catch (err) {
-      setError(err.message || 'An error occurred while fetching results. The server might be down.');
+      // Create a user-friendly error message
+      let userMessage = 'An error occurred while fetching results. The server might be down.';
+      
+      // Check for specific error types
+      if (err.message.includes('JSON')) {
+        userMessage = 'The DIU result server is currently unavailable or experiencing issues.';
+      } else if (err.message) {
+        userMessage = err.message;
+      }
+      
+      setError(userMessage);
     } finally {
       setLoading(false);
     }
