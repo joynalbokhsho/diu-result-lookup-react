@@ -8,7 +8,7 @@ const ResultSection = ({ result, onPrint, onNewSearch }) => {
     if (gpa >= 3.5) return "Great job! Your hard work is paying off!";
     if (gpa >= 3.0) return "Good work! Keep pushing yourself to reach higher!";
     if (gpa >= 2.5) return "You're doing well! A little more effort can take you further.";
-    return "Keep working hard. Persistence is key to academic success!";
+    return "";
   };
   
   // Function to get grade-specific motivational message
