@@ -16,7 +16,7 @@ function App() {
   const [semesterId, setSemesterId] = useState('');
 
   const handleSearch = async (e) => {
-    e.preventDefault();
+    if (e) e.preventDefault();
     setLoading(true);
     setError('');
     setResult(null);
@@ -26,7 +26,7 @@ function App() {
       const response = await fetch(`https://diurecords.vercel.app/api/result?grecaptcha=&semesterId=${semesterId}&studentId=${studentId}`);
       
       if (!response.ok) {
-        throw new Error('Failed to fetch results. Please try again.');
+        throw new Error('Failed to fetch results. The server might be down or experiencing issues.');
       }
       
       const data = await response.json();
@@ -71,7 +71,7 @@ function App() {
         cgpa: firstItem.cgpa
       });
     } catch (err) {
-      setError(err.message || 'An error occurred while fetching results');
+      setError(err.message || 'An error occurred while fetching results. The server might be down.');
     } finally {
       setLoading(false);
     }
@@ -80,6 +80,12 @@ function App() {
   const handleNewSearch = () => {
     setResult(null);
     setError('');
+  };
+
+  const handleRetry = () => {
+    if (studentId && semesterId) {
+      handleSearch();
+    }
   };
 
   const handlePrint = () => {
@@ -98,7 +104,7 @@ function App() {
       />
       
       {loading && <LoadingIndicator />}
-      {error && <ErrorContainer message={error} />}
+      {error && <ErrorContainer message={error} onRetry={handleRetry} />}
       {result && <ResultSection result={result} onPrint={handlePrint} onNewSearch={handleNewSearch} />}
       
       <FeaturesSection />
