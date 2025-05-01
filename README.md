@@ -1,6 +1,6 @@
 # DIU Result Lookup
 
-![DIU Result Lookup Screenshot](https://daffodilvarsity.edu.bd/template/images/diulogo.png)
+![DIU Result Lookup Screenshot](https://daffodilvarsity.edu.bd/template/images/diulogoside.png)
 
 A modern web application for Daffodil International University students to check their semester results quickly and easily.
 
