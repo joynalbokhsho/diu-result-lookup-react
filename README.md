@@ -17,7 +17,7 @@ A modern web application for Daffodil International University students to check
 
 Visit the live application:
 - [Main Pages](https://diu.joynalbokhsho.me)
-- [Cloudflare Pages](diuresult.pages.dev/) (faster performance)
+- [Cloudflare Pages](https://diuresult.pages.dev/) (faster performance)
 
 ## Technologies Used
 
