@@ -44,7 +44,7 @@ const Hero = ({ studentId, setStudentId, semesterId, setSemesterId, onSubmit }) 
                       required
                     />
                   </div>
-                  <div className="form-text">Example: 251-27-014</div>
+                  <div className="form-text">Example: ***-**-***</div>
                 </div>
                 
                 <div className="mb-4">
