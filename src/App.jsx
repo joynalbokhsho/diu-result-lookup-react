@@ -20,23 +20,14 @@ function App() {
     try {
       console.log(`Fetching student info for ID: ${id}`);
       
-      // Check if we're on HTTPS - if so, we'll use a CORS proxy or fallback smoothly
-      const isHttps = window.location.protocol === 'https:';
-      let apiUrl = `http://peoplepulse.diu.edu.bd:8189/result/studentInfo?studentId=${id}`;
+      // Use our serverless proxy endpoint to avoid mixed content issues
+      // This works on both HTTP and HTTPS
+      const apiUrl = `/api/studentInfo?studentId=${id}`;
       
-      // For HTTPS environments, try using a CORS proxy or handle gracefully
-      if (isHttps) {
-        // Option 1: Try using a CORS proxy (example using cors-anywhere, but you'll need to deploy your own)
-        // apiUrl = `https://your-cors-proxy.herokuapp.com/${apiUrl}`;
-        
-        // Option 2: Fall back gracefully - we'll use a fallback method in this case
-        console.log('HTTPS detected: Cannot make direct HTTP request to student info API. Using fallback method.');
-        return null;
-      }
+      console.log(`Making request to proxy API: ${apiUrl}`);
       
       const response = await fetch(apiUrl, {
         method: 'GET',
-        mode: 'cors',
         headers: {
           'Accept': 'application/json'
         }
