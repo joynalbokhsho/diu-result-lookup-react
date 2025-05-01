@@ -50,10 +50,10 @@ const Navbar = () => {
               <a className="nav-link active" href="/">Home</a>
             </li>
             <li className="nav-item">
-              <a className="nav-link" href="https://daffodilvarsity.edu.bd/" target="_blank" rel="noopener noreferrer">DIU Website</a>
+              <a className="nav-link" href="https://result.joynalbokhsho.me" target="_blank" rel="noopener noreferrer">Result V1</a>
             </li>
             <li className="nav-item">
-              <a className="nav-link" href="https://elearn.daffodilvarsity.edu.bd/" target="_blank" rel="noopener noreferrer">DIU E-Learn</a>
+              <a className="nav-link" href="https://github.com/joynalbokhsho//" target="_blank" rel="noopener noreferrer">Github</a>
             </li>
           </ul>
         </div>
