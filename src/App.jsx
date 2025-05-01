@@ -14,12 +14,33 @@ function App() {
   const [result, setResult] = useState(null);
   const [studentId, setStudentId] = useState('');
   const [semesterId, setSemesterId] = useState('');
+  const [studentInfo, setStudentInfo] = useState(null);
+
+  const fetchStudentInfo = async (id) => {
+    try {
+      console.log(`Fetching student info for ID: ${id}`);
+      const response = await fetch(`http://peoplepulse.diu.edu.bd:8189/result/studentInfo?studentId=${id}`);
+      
+      if (!response.ok) {
+        console.warn('Student info API returned an error:', response.status);
+        return null;
+      }
+      
+      const data = await response.json();
+      console.log('Student info received:', data);
+      return data;
+    } catch (err) {
+      console.warn('Error fetching student info:', err.message);
+      return null;
+    }
+  };
 
   const handleSearch = async (e) => {
     if (e) e.preventDefault();
     setLoading(true);
     setError('');
     setResult(null);
+    setStudentInfo(null);
     
     // Log search attempt to help with debugging
     console.log(`Searching for student: ${studentId}, semester: ${semesterId}`);
@@ -30,6 +51,10 @@ function App() {
         throw new Error('Please provide both Student ID and Semester.');
       }
 
+      // First fetch student information
+      const studentInfoData = await fetchStudentInfo(studentId);
+      
+      // Continue with result fetching regardless of student info success
       // Actual API call to the provided endpoint
       console.log('Fetching data from API...');
       const response = await fetch(`https://diurecords.vercel.app/api/result?grecaptcha=&semesterId=${semesterId}&studentId=${studentId}`)
@@ -84,12 +109,20 @@ function App() {
       
       const semesterGpa = totalCredits > 0 ? (totalPoints / totalCredits).toFixed(2) : 0;
       
+      // Store student info
+      if (studentInfoData) {
+        setStudentInfo(studentInfoData);
+      }
+      
       setResult({
         studentInfo: {
           id: firstItem.studentId,
-          name: "Not Available",  // API doesn't provide student name
-          program: "Not Available",  // API doesn't provide program
-          batch: "Not Available"  // API doesn't provide batch
+          // Use student info API data if available, otherwise default values
+          name: studentInfoData ? studentInfoData.studentName : "Not Available",
+          program: studentInfoData ? `${studentInfoData.programName} (${studentInfoData.progShortName})` : "Not Available",
+          batch: studentInfoData ? studentInfoData.batchNo : "Not Available",
+          department: studentInfoData ? studentInfoData.departmentName : "Not Available",
+          faculty: studentInfoData ? studentInfoData.facultyName : "Not Available"
         },
         semester: {
           id: firstItem.semesterId,

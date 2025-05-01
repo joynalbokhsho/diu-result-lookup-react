@@ -1,5 +1,5 @@
 import React from 'react';
-import { FaPrint, FaSearch, FaStar, FaGraduationCap, FaUserGraduate, FaClipboardList } from 'react-icons/fa';
+import { FaPrint, FaSearch, FaStar, FaGraduationCap, FaUserGraduate, FaClipboardList, FaUniversity, FaBuilding } from 'react-icons/fa';
 
 const ResultSection = ({ result, onPrint, onNewSearch }) => {
   // Function to determine motivational message based on GPA
@@ -37,7 +37,7 @@ const ResultSection = ({ result, onPrint, onNewSearch }) => {
       case 'D':
         return "Minimal passing performance!";
       default:
-        return "Keep working to improve!";
+        return "";
     }
   };
 
@@ -67,7 +67,7 @@ const ResultSection = ({ result, onPrint, onNewSearch }) => {
       
       <div className="row g-4 mb-4">
         {/* Student Information */}
-        <div className="col-md-6">
+        <div className="col-lg-8">
           <div className="info-card">
             <div className="card-header">
               <FaUserGraduate /> Student Information
@@ -98,32 +98,48 @@ const ResultSection = ({ result, onPrint, onNewSearch }) => {
                     <div className="info-value">{result.studentInfo.batch}</div>
                   </div>
                 </div>
+                {result.studentInfo.department && (
+                  <div className="col-md-6">
+                    <div className="info-item">
+                      <div className="info-label"><FaBuilding className="me-1" /> Department</div>
+                      <div className="info-value">{result.studentInfo.department}</div>
+                    </div>
+                  </div>
+                )}
+                {result.studentInfo.faculty && (
+                  <div className="col-md-6">
+                    <div className="info-item">
+                      <div className="info-label"><FaUniversity className="me-1" /> Faculty</div>
+                      <div className="info-value">{result.studentInfo.faculty}</div>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>
         </div>
         
         {/* Result Summary */}
-        <div className="col-md-6">
+        <div className="col-lg-4">
           <div className="info-card">
             <div className="card-header">
               <FaClipboardList /> Result Summary
             </div>
             <div className="card-body">
               <div className="row g-3">
-                <div className="col-md-6">
+                <div className="col-md-6 col-lg-12">
                   <div className="info-item">
                     <div className="info-label">Semester GPA</div>
                     <div className="info-value cgpa">{safeToFixed(result.semester.gpa)}</div>
                   </div>
                 </div>
-                <div className="col-md-6">
+                <div className="col-md-6 col-lg-12">
                   <div className="info-item">
                     <div className="info-label">Overall CGPA</div>
                     <div className="info-value cgpa">{safeToFixed(result.cgpa)}</div>
                   </div>
                 </div>
-                <div className="col-md-6">
+                <div className="col-md-6 col-lg-12">
                   <div className="info-item">
                     <div className="info-label">Total Credits</div>
                     <div className="info-value">
@@ -131,7 +147,7 @@ const ResultSection = ({ result, onPrint, onNewSearch }) => {
                     </div>
                   </div>
                 </div>
-                <div className="col-md-6">
+                <div className="col-md-6 col-lg-12">
                   <div className="info-item">
                     <div className="info-label">Courses</div>
                     <div className="info-value">{result.courses.length}</div>
