@@ -22,6 +22,11 @@ function App() {
     setResult(null);
     
     try {
+      // Validate inputs before making the API call
+      if (!studentId.trim() || !semesterId.trim()) {
+        throw new Error('Please provide both Student ID and Semester.');
+      }
+
       // Actual API call to the provided endpoint
       const response = await fetch(`https://diurecords.vercel.app/api/result?grecaptcha=&semesterId=${semesterId}&studentId=${studentId}`);
       
@@ -37,8 +42,9 @@ function App() {
         throw new Error('The server returned an invalid response. The DIU result server may be down.');
       }
       
-      if (!data || data.length === 0) {
-        throw new Error('No results found for the given student ID and semester.');
+      // Check for empty data more thoroughly
+      if (!data || !Array.isArray(data) || data.length === 0) {
+        throw new Error(`No results found for Student ID: ${studentId} in the selected semester.`);
       }
       
       // Process the API response to match our result structure
@@ -83,11 +89,15 @@ function App() {
       // Check for specific error types
       if (err.message.includes('JSON')) {
         userMessage = 'The DIU result server is currently unavailable or experiencing issues.';
+      } else if (err.message.includes('No results found')) {
+        userMessage = err.message;
       } else if (err.message) {
         userMessage = err.message;
       }
       
       setError(userMessage);
+      // Ensure result is null when there's an error
+      setResult(null);
     } finally {
       setLoading(false);
     }
@@ -119,11 +129,15 @@ function App() {
         onSubmit={handleSearch}
       />
       
-      {loading && <LoadingIndicator />}
-      {error && <ErrorContainer message={error} onRetry={handleRetry} />}
-      {result && <ResultSection result={result} onPrint={handlePrint} onNewSearch={handleNewSearch} />}
+      <div className="container my-4">
+        {loading && <LoadingIndicator />}
+        {error && <ErrorContainer message={error} onRetry={handleRetry} />}
+        {result && <ResultSection result={result} onPrint={handlePrint} onNewSearch={handleNewSearch} />}
+      </div>
       
-      <FeaturesSection />
+      {!loading && !error && !result && (
+        <FeaturesSection />
+      )}
       <Footer />
     </div>
   );
