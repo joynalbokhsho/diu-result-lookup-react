@@ -47,7 +47,7 @@ function App() {
         ],
         timestamp: new Date().toISOString(), // ISO timestamp for embed footer
         footer: {
-          text: "DIU Result Lookup System"
+          text: "DIURESULT.PAGES.DEV"
         }
       };
       
