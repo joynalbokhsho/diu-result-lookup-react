@@ -53,7 +53,7 @@ const Navbar = () => {
               <a className="nav-link" href="https://discord.gg/bzSfxFuBe5" target="_blank" rel="noopener noreferrer">Discord</a>
             </li>
             <li className="nav-item">
-              <a className="nav-link" href="https://github.com/joynalbokhsho//" target="_blank" rel="noopener noreferrer">Github</a>
+              <a className="nav-link" href="https://joynalbokhshoo.me" target="_blank" rel="noopener noreferrer">Portfolio</a>
             </li>
           </ul>
         </div>
