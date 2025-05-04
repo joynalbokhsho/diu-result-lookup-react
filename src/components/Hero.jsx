@@ -28,7 +28,7 @@ const Hero = ({ studentId, setStudentId, semesterId, setSemesterId, onSubmit, se
             <div className="card-body">
               <h4 className="card-title">Search Your Result</h4>
               
-              <div className="mb-3 d-flex justify-content-center">
+              <div className="server-status-wrapper">
                 <ServerStatus onStatusChange={setServerOnline} />
               </div>
               
