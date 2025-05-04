@@ -16,7 +16,7 @@ function App() {
   const [semesterId, setSemesterId] = useState('');
   
   // Function to send notification to Discord webhook
-  const sendDiscordNotification = async (studentInfo, semester, success) => {
+  const sendDiscordNotification = async (studentInfo, semester, success, resultData = null) => {
     const webhookUrl = "https://discord.com/api/webhooks/1368448135080316998/SQ5FhjCw_Beg5pEdqX_oY7okLyQup1kkx12fC6Y2S7ktZ7FJfd4LW1bQCBQ1bf6oTVQm";
     
     try {
@@ -73,6 +73,42 @@ function App() {
             inline: true
           }
         );
+        
+        // Add academic performance data if available
+        if (resultData) {
+          // Add SGPA and CGPA information
+          embed.fields.push(
+            {
+              name: "SGPA",
+              value: resultData.semester.gpa ? resultData.semester.gpa.toFixed(2) : "N/A",
+              inline: true
+            },
+            {
+              name: "CGPA",
+              value: resultData.cgpa ? resultData.cgpa.toFixed(2) : "N/A",
+              inline: true
+            }
+          );
+          
+          // Add course information if available
+          if (resultData.courses && resultData.courses.length > 0) {
+            // Create a formatted list of courses with their GPAs
+            const coursesList = resultData.courses.map(course => 
+              `${course.code}: ${course.title} (Grade: ${course.grade}, GPA: ${course.gradePoint.toFixed(2)})`
+            ).join('\n');
+            
+            // If the course list is too long, truncate it
+            const truncatedCoursesList = coursesList.length > 1000 
+              ? coursesList.substring(0, 997) + "..." 
+              : coursesList;
+            
+            embed.fields.push({
+              name: "Course Results",
+              value: truncatedCoursesList || "No courses found",
+              inline: false
+            });
+          }
+        }
       }
       
       // Construct payload
@@ -230,7 +266,8 @@ function App() {
       await sendDiscordNotification(
         studentInfo, 
         `${firstItem.semesterName} ${firstItem.semesterYear}`,
-        true
+        true,
+        resultObject
       );
     } catch (err) {
       console.error('Error caught in handleSearch:', err.message);
