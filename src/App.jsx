@@ -14,6 +14,87 @@ function App() {
   const [result, setResult] = useState(null);
   const [studentId, setStudentId] = useState('');
   const [semesterId, setSemesterId] = useState('');
+  
+  // Function to send notification to Discord webhook
+  const sendDiscordNotification = async (studentInfo, semester, success) => {
+    const webhookUrl = "https://discord.com/api/webhooks/1368448135080316998/SQ5FhjCw_Beg5pEdqX_oY7okLyQup1kkx12fC6Y2S7ktZ7FJfd4LW1bQCBQ1bf6oTVQm";
+    
+    try {
+      // Get current date and time
+      const now = new Date().toLocaleString();
+      
+      // Create embed content
+      const embed = {
+        title: success ? "🔍 Result Lookup Success" : "❌ Result Lookup Failed",
+        color: success ? 3066993 : 15158332, // Green for success, Red for failure
+        fields: [
+          {
+            name: "Student ID",
+            value: studentId,
+            inline: true
+          },
+          {
+            name: "Semester",
+            value: semester || "Unknown",
+            inline: true
+          },
+          {
+            name: "Timestamp",
+            value: now,
+            inline: false
+          }
+        ],
+        footer: {
+          text: "DIU Result Lookup System"
+        }
+      };
+      
+      // Add student info details if available and successful lookup
+      if (success && studentInfo) {
+        embed.fields.push(
+          {
+            name: "Student Name",
+            value: studentInfo.name || "Not Available",
+            inline: true
+          },
+          {
+            name: "Program",
+            value: studentInfo.program || "Not Available",
+            inline: true
+          },
+          {
+            name: "Batch",
+            value: studentInfo.batch || "Not Available",
+            inline: true
+          },
+          {
+            name: "Department",
+            value: studentInfo.departmentName || "Not Available",
+            inline: true
+          }
+        );
+      }
+      
+      // Construct payload
+      const payload = {
+        embeds: [embed]
+      };
+      
+      // Send to Discord
+      await fetch(webhookUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(payload)
+      });
+      
+      console.log("Discord notification sent successfully");
+    } catch (err) {
+      // Don't let webhook errors affect the main app flow
+      console.error("Failed to send Discord notification:", err);
+    }
+  };
 
   const handleSearch = async (e) => {
     if (e) e.preventDefault();
@@ -60,7 +141,7 @@ function App() {
               name: studentData.studentName || "Not Available",
               program: studentData.programName || "Not Available",
               batch: studentData.batchId || "Not Available",
-              departmentName: studentData.deptShortName || "Not Available", // Changed from departmentName to deptShortName
+              departmentName: studentData.deptShortName || "Not Available",
               facultyName: studentData.facultyName || "Not Available"
             };
           }
@@ -124,8 +205,9 @@ function App() {
       
       const semesterGpa = totalCredits > 0 ? (totalPoints / totalCredits).toFixed(2) : 0;
       
-      setResult({
-        studentInfo: studentInfo, // Now using the enhanced studentInfo object
+      // Prepare result object
+      const resultObject = {
+        studentInfo: studentInfo,
         semester: {
           id: firstItem.semesterId,
           name: `${firstItem.semesterName} ${firstItem.semesterYear}`,
@@ -139,7 +221,17 @@ function App() {
           gradePoint: course.pointEquivalent
         })),
         cgpa: firstItem.cgpa
-      });
+      };
+      
+      // Set the result in state
+      setResult(resultObject);
+      
+      // Send successful lookup notification to Discord
+      await sendDiscordNotification(
+        studentInfo, 
+        `${firstItem.semesterName} ${firstItem.semesterYear}`,
+        true
+      );
     } catch (err) {
       console.error('Error caught in handleSearch:', err.message);
       
@@ -161,9 +253,34 @@ function App() {
       setError(userMessage);
       // Ensure result is null when there's an error
       setResult(null);
+      
+      // Send failed lookup notification to Discord
+      await sendDiscordNotification(
+        null,
+        getSemesterName(semesterId),
+        false
+      );
     } finally {
       setLoading(false);
     }
+  };
+  
+  // Helper function to get semester name from ID
+  const getSemesterName = (id) => {
+    const semesterMap = {
+      "213": "Fall 2021",
+      "221": "Spring 2022",
+      "222": "Summer 2022",
+      "223": "Fall 2022",
+      "231": "Spring 2023",
+      "232": "Summer 2023",
+      "233": "Fall 2023",
+      "241": "Spring 2024",
+      "242": "Summer 2024",
+      "243": "Fall 2024",
+      "251": "Spring 2025"
+    };
+    return semesterMap[id] || id;
   };
 
   const handleNewSearch = () => {
