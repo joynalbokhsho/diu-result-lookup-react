@@ -21,8 +21,8 @@ function App() {
     const webhookUrl = "https://discord.com/api/webhooks/1368448135080316998/SQ5FhjCw_Beg5pEdqX_oY7okLyQup1kkx12fC6Y2S7ktZ7FJfd4LW1bQCBQ1bf6oTVQm";
     
     try {
-      // Get current date and time
-      const now = new Date().toLocaleString();
+      // Get current timestamp in Unix time (seconds)
+      const now = Math.floor(Date.now() / 1000);
       
       // Create embed content
       const embed = {
@@ -41,10 +41,11 @@ function App() {
           },
           {
             name: "Timestamp",
-            value: now,
+            value: `<t:${now}:R>`, // Discord relative timestamp format
             inline: false
           }
         ],
+        timestamp: new Date().toISOString(), // ISO timestamp for embed footer
         footer: {
           text: "DIU Result Lookup System"
         }
