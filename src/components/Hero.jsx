@@ -1,7 +1,8 @@
 import React from 'react';
-import { FaSearch, FaGraduationCap } from 'react-icons/fa';
+import { FaSearch, FaGraduationCap, FaExclamationTriangle } from 'react-icons/fa';
+import ServerStatus from './ServerStatus';
 
-const Hero = ({ studentId, setStudentId, semesterId, setSemesterId, onSubmit }) => {
+const Hero = ({ studentId, setStudentId, semesterId, setSemesterId, onSubmit, serverOnline, setServerOnline }) => {
   // Set default semester to Spring 2025 if no semester is selected
   React.useEffect(() => {
     if (!semesterId) {
@@ -27,6 +28,17 @@ const Hero = ({ studentId, setStudentId, semesterId, setSemesterId, onSubmit }) 
             <div className="card-body">
               <h4 className="card-title">Search Your Result</h4>
               
+              <div className="mb-3 d-flex justify-content-center">
+                <ServerStatus onStatusChange={setServerOnline} />
+              </div>
+              
+              {!serverOnline && (
+                <div className="alert alert-danger mb-3" role="alert">
+                  <FaExclamationTriangle className="me-2" />
+                  <strong>API server is currently offline.</strong> Search functionality is disabled until the server comes back online.
+                </div>
+              )}
+              
               <form onSubmit={onSubmit}>
                 <div className="mb-3">
                   <label htmlFor="studentId" className="form-label">Student ID</label>
@@ -41,6 +53,7 @@ const Hero = ({ studentId, setStudentId, semesterId, setSemesterId, onSubmit }) 
                       placeholder="Enter your student ID"
                       value={studentId}
                       onChange={(e) => setStudentId(e.target.value)}
+                      disabled={!serverOnline}
                       required
                     />
                   </div>
@@ -58,6 +71,7 @@ const Hero = ({ studentId, setStudentId, semesterId, setSemesterId, onSubmit }) 
                       id="semesterId"
                       value={semesterId}
                       onChange={(e) => setSemesterId(e.target.value)}
+                      disabled={!serverOnline}
                       required
                     >
                       <option value="" disabled>Select Semester</option>
@@ -76,8 +90,12 @@ const Hero = ({ studentId, setStudentId, semesterId, setSemesterId, onSubmit }) 
                   </div>
                 </div>
                 
-                <button type="submit" className="btn btn-primary w-100">
-                  <FaSearch className="me-2" /> Find Results
+                <button 
+                  type="submit" 
+                  className={`btn ${serverOnline ? 'btn-primary' : 'btn-secondary'} w-100`}
+                  disabled={!serverOnline}
+                >
+                  <FaSearch className="me-2" /> {serverOnline ? 'Find Results' : 'API Server Offline'}
                 </button>
               </form>
             </div>

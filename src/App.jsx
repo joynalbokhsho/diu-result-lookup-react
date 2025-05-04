@@ -14,6 +14,7 @@ function App() {
   const [result, setResult] = useState(null);
   const [studentId, setStudentId] = useState('');
   const [semesterId, setSemesterId] = useState('');
+  const [serverOnline, setServerOnline] = useState(true); // Add server status state
   
   // Function to send notification to Discord webhook
   const sendDiscordNotification = async (studentInfo, semester, success, resultData = null) => {
@@ -364,6 +365,8 @@ function App() {
         semesterId={semesterId}
         setSemesterId={setSemesterId}
         onSubmit={handleSearch}
+        serverOnline={serverOnline} 
+        setServerOnline={setServerOnline} // Added setServerOnline prop here
       />
       
       <div className="container my-4">
