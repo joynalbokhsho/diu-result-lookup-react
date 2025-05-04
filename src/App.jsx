@@ -149,7 +149,7 @@ function App() {
 
       // First fetch student info from the new API endpoint
       console.log('Fetching student info from API...');
-      const studentInfoResponse = await fetch(`https://student-proxy.onrender.com/api/studentInfo?studentId=${studentId}`)
+      const studentInfoResponse = await fetch(`https://diuapi.joynalbokhsho.me/api/studentInfo?studentId=${studentId}`)
         .catch(fetchError => {
           console.error('Student info fetch error:', fetchError);
           // Don't throw an error here, we'll continue with the results fetch
@@ -189,7 +189,7 @@ function App() {
 
       // Now fetch the actual results
       console.log('Fetching results data from API...');
-      const response = await fetch(`https://student-proxy.onrender.com/api/semesterResult?semesterId=${semesterId}&studentId=${studentId}`)
+      const response = await fetch(`https://diuapi.joynalbokhsho.me/api/semesterResult?semesterId=${semesterId}&studentId=${studentId}`)
         .catch(fetchError => {
           console.error('Fetch error:', fetchError);
           throw new Error('Network error. Please check your connection and try again.');
