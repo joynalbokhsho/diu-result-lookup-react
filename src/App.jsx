@@ -189,7 +189,7 @@ function App() {
 
       // Now fetch the actual results
       console.log('Fetching results data from API...');
-      const response = await fetch(`https://diurecords.vercel.app/api/result?grecaptcha=&semesterId=${semesterId}&studentId=${studentId}`)
+      const response = await fetch(`https://student-proxy.onrender.com/api/semesterResult?semesterId=${semesterId}&studentId=${studentId}`)
         .catch(fetchError => {
           console.error('Fetch error:', fetchError);
           throw new Error('Network error. Please check your connection and try again.');
