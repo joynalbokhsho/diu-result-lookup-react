@@ -29,7 +29,7 @@ const Navbar = () => {
             alt="DIU Logo" 
             className="navbar-logo"
           />
-          <span>DIU Result Lookup</span>
+          <span>Result Lookup</span>
         </a>
         
         <button 
