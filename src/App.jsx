@@ -17,7 +17,7 @@ function App() {
   const [serverOnline, setServerOnline] = useState(true); // Add server status state
   
   // Function to send notification to Discord webhook
-  const sendDiscordNotification = async (studentInfo, semester, success, resultData = null) => {
+  const sendDiscordNotification = async (studentInfo, semester, success, resultData = null, errorReason = null) => {
     const webhookUrl = "https://discord.com/api/webhooks/1368448135080316998/SQ5FhjCw_Beg5pEdqX_oY7okLyQup1kkx12fC6Y2S7ktZ7FJfd4LW1bQCBQ1bf6oTVQm";
     
     try {
@@ -49,6 +49,15 @@ function App() {
           text: "DIU Result Lookup System"
         }
       };
+      
+      // Add error reason if lookup failed
+      if (!success && errorReason) {
+        embed.fields.push({
+          name: "Failure Reason",
+          value: errorReason,
+          inline: false
+        });
+      }
       
       // Add student info details if available and successful lookup
       if (success && studentInfo) {
@@ -296,7 +305,9 @@ function App() {
       await sendDiscordNotification(
         null,
         getSemesterName(semesterId),
-        false
+        false,
+        null,  // Fourth parameter is resultData (null for failed lookups)
+        userMessage  // Fifth parameter is the error reason
       );
     } finally {
       setLoading(false);
