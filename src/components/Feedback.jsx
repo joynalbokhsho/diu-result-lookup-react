@@ -132,11 +132,12 @@ const Feedback = ({ isOpen, onClose }) => {
     }
   };
 
+  // Common input style for all form fields
   const inputStyle = {
     width: '100%', 
     fontSize: '1rem',
     padding: '0.75rem',
-    height: '45px',
+    height: '48px',
     boxSizing: 'border-box',
     display: 'block',
     lineHeight: '1.5',
@@ -146,6 +147,13 @@ const Feedback = ({ isOpen, onClose }) => {
     border: '1px solid #ced4da',
     borderRadius: '0.25rem',
     transition: 'border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out'
+  };
+
+  // Common label style for all form fields
+  const labelStyle = {
+    display: 'block', 
+    marginBottom: '0.5rem',
+    fontWeight: '600'
   };
 
   return (
@@ -226,11 +234,11 @@ const Feedback = ({ isOpen, onClose }) => {
                 </div>
               ) : (
                 <form onSubmit={handleFeedbackSubmit} style={{ width: '100%' }}>
-                  <div className="mb-3" style={{ width: '100%' }}>
-                    <label htmlFor="feedbackName" className="form-label fw-semibold">Name</label>
+                  {/* Name input field */}
+                  <div style={{ marginBottom: '1rem', width: '100%' }}>
+                    <label htmlFor="feedbackName" style={labelStyle}>Name</label>
                     <input
                       type="text"
-                      className="form-control"
                       id="feedbackName"
                       value={feedbackName}
                       onChange={(e) => setFeedbackName(e.target.value)}
@@ -238,38 +246,24 @@ const Feedback = ({ isOpen, onClose }) => {
                       style={inputStyle}
                     />
                   </div>
+                  
+                  {/* Email input field - now with consistent styling */}
                   <div style={{ marginBottom: '1rem', width: '100%' }}>
-                    <label htmlFor="feedbackEmail" style={{ 
-                      display: 'block', 
-                      marginBottom: '0.5rem',
-                      fontWeight: '600'
-                    }}>
-                      Email
-                    </label>
+                    <label htmlFor="feedbackEmail" style={labelStyle}>Email</label>
                     <input
                       type="email"
                       id="feedbackEmail"
                       value={feedbackEmail}
                       onChange={(e) => setFeedbackEmail(e.target.value)}
                       placeholder="Your email (optional)"
-                      style={{ 
-                        width: '100%',
-                        display: 'block',
-                        fontSize: '16px', 
-                        padding: '12px',
-                        height: '48px',
-                        border: '1px solid #ced4da',
-                        borderRadius: '4px',
-                        backgroundColor: '#fff',
-                        boxShadow: 'none',
-                        textOverflow: 'ellipsis'
-                      }}
+                      style={inputStyle}
                     />
                   </div>
-                  <div className="mb-4" style={{ width: '100%' }}>
-                    <label htmlFor="feedbackText" className="form-label fw-semibold">Your Feedback</label>
+                  
+                  {/* Feedback text area */}
+                  <div style={{ marginBottom: '1.5rem', width: '100%' }}>
+                    <label htmlFor="feedbackText" style={labelStyle}>Your Feedback</label>
                     <textarea
-                      className="form-control"
                       id="feedbackText"
                       rows="5"
                       value={feedbackText}
@@ -277,16 +271,16 @@ const Feedback = ({ isOpen, onClose }) => {
                       placeholder="Please share your thoughts, suggestions, or report issues..."
                       required
                       style={{ 
-                        width: '100%', 
-                        fontSize: '1rem',
-                        padding: '0.75rem',
-                        resize: 'vertical',
-                        boxSizing: 'border-box',
-                        minHeight: '120px'
+                        ...inputStyle,
+                        height: 'auto',
+                        minHeight: '120px',
+                        resize: 'vertical'
                       }}
                     ></textarea>
                   </div>
-                  <div className="d-grid" style={{ width: '100%' }}>
+                  
+                  {/* Submit button */}
+                  <div style={{ width: '100%' }}>
                     <button 
                       type="submit" 
                       className="btn btn-primary"
