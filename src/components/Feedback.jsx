@@ -238,22 +238,31 @@ const Feedback = ({ isOpen, onClose }) => {
                       style={inputStyle}
                     />
                   </div>
-                  <div className="mb-3" style={{ width: '100%', marginBottom: '1rem' }}>
-                    <label htmlFor="feedbackEmail" className="form-label fw-semibold" style={{ marginBottom: '0.5rem', display: 'block' }}>Email</label>
+                  <div style={{ marginBottom: '1rem', width: '100%' }}>
+                    <label htmlFor="feedbackEmail" style={{ 
+                      display: 'block', 
+                      marginBottom: '0.5rem',
+                      fontWeight: '600'
+                    }}>
+                      Email
+                    </label>
                     <input
                       type="email"
-                      className="form-control"
                       id="feedbackEmail"
                       value={feedbackEmail}
                       onChange={(e) => setFeedbackEmail(e.target.value)}
                       placeholder="Your email (optional)"
-                      style={{
-                        ...inputStyle,
-                        minWidth: '100%',
-                        maxWidth: '100%',
-                        WebkitAppearance: 'none',
-                        MozAppearance: 'none',
-                        appearance: 'none'
+                      style={{ 
+                        width: '100%',
+                        display: 'block',
+                        fontSize: '16px', 
+                        padding: '12px',
+                        height: '48px',
+                        border: '1px solid #ced4da',
+                        borderRadius: '4px',
+                        backgroundColor: '#fff',
+                        boxShadow: 'none',
+                        textOverflow: 'ellipsis'
                       }}
                     />
                   </div>
