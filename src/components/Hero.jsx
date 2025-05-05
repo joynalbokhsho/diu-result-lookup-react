@@ -23,7 +23,7 @@ const Hero = ({ studentId, setStudentId, semesterId, setSemesterId, onSubmit, se
           </h1>
           <p className="hero-subtitle">
             Get instant access to your academic results from Daffodil International University.
-            Simply enter your Student ID and select a semester to view your grades.
+            Simply enter your Student ID and select a semester to view your grades. 
           </p>
           <button 
             className="btn btn-outline-secondary mt-2"
