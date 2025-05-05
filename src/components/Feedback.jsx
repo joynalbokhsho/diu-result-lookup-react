@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { FaComment } from 'react-icons/fa';
-import '../assets/styles.css'; // Make sure styles are imported
 
+// Completely rewritten Feedback component with direct styling
 const Feedback = ({ isOpen, onClose }) => {
   const [feedbackName, setFeedbackName] = useState('');
   const [feedbackEmail, setFeedbackEmail] = useState('');
@@ -15,18 +15,15 @@ const Feedback = ({ isOpen, onClose }) => {
     if (isOpen) {
       document.body.classList.add('modal-open');
       document.body.style.overflow = 'hidden';
-      document.body.style.paddingRight = '15px'; // Prevent layout shift
     } else {
       document.body.classList.remove('modal-open');
       document.body.style.overflow = '';
-      document.body.style.paddingRight = '';
     }
     
     // Cleanup when component unmounts
     return () => {
       document.body.classList.remove('modal-open');
       document.body.style.overflow = '';
-      document.body.style.paddingRight = '';
     };
   }, [isOpen]);
 
@@ -42,10 +39,9 @@ const Feedback = ({ isOpen, onClose }) => {
       // Get current timestamp in Unix time (seconds)
       const now = Math.floor(Date.now() / 1000);
       
-      // Create embed content
       const embed = {
         title: "📝 New User Feedback",
-        color: 5793266, // Green-blue color
+        color: 5793266,
         fields: [
           {
             name: "User Name",
@@ -59,7 +55,7 @@ const Feedback = ({ isOpen, onClose }) => {
           },
           {
             name: "Timestamp",
-            value: `<t:${now}:R>`, // Discord relative timestamp format
+            value: `<t:${now}:R>`,
             inline: false
           },
           {
@@ -68,29 +64,22 @@ const Feedback = ({ isOpen, onClose }) => {
             inline: false
           }
         ],
-        timestamp: new Date().toISOString(), // ISO timestamp for embed footer
+        timestamp: new Date().toISOString(),
         footer: {
           text: "DIU RESULT LOOKUP FEEDBACK"
         }
       };
       
-      // Construct payload
-      const payload = {
-        embeds: [embed]
-      };
+      const payload = { embeds: [embed] };
       
-      // Send to Discord
       const response = await fetch(webhookUrl, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)
       });
       
       if (response.ok) {
         setSubmitSuccess(true);
-        // Reset form fields on successful submission
         setFeedbackName('');
         setFeedbackEmail('');
         setFeedbackText('');
@@ -111,216 +100,220 @@ const Feedback = ({ isOpen, onClose }) => {
     }
   };
   
-  // Close modal when clicking outside
-  const handleBackdropClick = (e) => {
-    if (e.target.classList.contains('modal-backdrop') && !submitting) {
-      onClose();
-    }
-  };
-  
   if (!isOpen) return null;
 
-  // Calculate modal width based on screen size
+  // Styles as JavaScript objects
+  const modalOverlayStyle = {
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    width: '100%',
+    height: '100%',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 1050,
+    padding: '20px'
+  };
+  
+  // Get appropriate modal width based on screen size
   const getModalWidth = () => {
-    const windowWidth = window.innerWidth;
-    if (windowWidth < 576) {
-      return '95%'; // For mobile devices
-    } else if (windowWidth < 992) {
-      return '80%'; // For tablets
-    } else {
-      return '500px'; // For desktops
-    }
+    const width = window.innerWidth;
+    return width < 576 ? '95%' : width < 992 ? '80%' : '500px';
   };
-
-  // Common input style for all form fields
-  const inputStyle = {
-    width: '100%', 
-    fontSize: '1rem',
-    padding: '0.75rem',
-    height: '48px',
-    boxSizing: 'border-box',
-    display: 'block',
-    lineHeight: '1.5',
-    color: '#212529',
+  
+  const modalContentStyle = {
     backgroundColor: '#fff',
-    backgroundClip: 'padding-box',
-    border: '1px solid #ced4da',
-    borderRadius: '0.25rem',
-    transition: 'border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out'
+    borderRadius: '8px',
+    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+    width: '100%',
+    maxWidth: getModalWidth(),
+    position: 'relative',
+    overflow: 'hidden'
   };
-
-  // Common label style for all form fields
+  
+  const modalHeaderStyle = {
+    backgroundColor: '#f8f9fa',
+    padding: '15px 20px',
+    borderBottom: '1px solid #dee2e6',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between'
+  };
+  
+  const modalTitleStyle = {
+    margin: 0,
+    fontWeight: 600,
+    fontSize: '18px',
+    display: 'flex',
+    alignItems: 'center'
+  };
+  
+  const closeButtonStyle = {
+    background: 'transparent',
+    border: 'none',
+    fontSize: '24px',
+    cursor: 'pointer',
+    padding: '0',
+    color: '#666',
+    outline: 'none'
+  };
+  
+  const modalBodyStyle = {
+    padding: '20px'
+  };
+  
+  const formStyle = {
+    width: '100%'
+  };
+  
+  const formGroupStyle = {
+    marginBottom: '20px'
+  };
+  
   const labelStyle = {
-    display: 'block', 
-    marginBottom: '0.5rem',
-    fontWeight: '600'
+    display: 'block',
+    marginBottom: '8px',
+    fontWeight: 600,
+    fontSize: '16px'
+  };
+  
+  const inputStyle = {
+    width: '100%',
+    height: '48px',
+    padding: '10px 15px',
+    fontSize: '16px',
+    border: '1px solid #ced4da',
+    borderRadius: '4px',
+    boxSizing: 'border-box',
+    display: 'block'
+  };
+  
+  const textareaStyle = {
+    ...inputStyle,
+    height: 'auto',
+    minHeight: '120px',
+    resize: 'vertical'
+  };
+  
+  const buttonStyle = {
+    width: '100%',
+    padding: '12px 20px',
+    fontSize: '16px',
+    fontWeight: 500,
+    color: '#fff',
+    backgroundColor: '#006A4E',
+    border: 'none',
+    borderRadius: '4px',
+    cursor: 'pointer',
+    display: 'block'
+  };
+  
+  const disabledButtonStyle = {
+    ...buttonStyle,
+    opacity: 0.65,
+    cursor: 'not-allowed'
+  };
+  
+  const alertSuccessStyle = {
+    padding: '15px',
+    marginBottom: '20px',
+    borderRadius: '4px',
+    backgroundColor: '#d4edda',
+    color: '#155724',
+    borderColor: '#c3e6cb'
+  };
+  
+  const alertErrorStyle = {
+    padding: '15px',
+    marginBottom: '20px',
+    borderRadius: '4px',
+    backgroundColor: '#f8d7da',
+    color: '#721c24',
+    borderColor: '#f5c6cb'
   };
 
   return (
-    <>
-      <div 
-        className={`modal fade ${isOpen ? 'show feedback-modal-open' : ''}`}
-        style={{ 
-          display: 'block', 
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          width: '100%',
-          height: '100%',
-          zIndex: 1050,
-          overflow: 'auto',
-          transition: 'opacity 0.15s linear'
-        }} 
-        tabIndex="-1"
-        aria-modal="true"
-        role="dialog"
-      >
-        <div 
-          className="modal-dialog modal-dialog-centered" 
-          style={{ 
-            maxWidth: getModalWidth(),
-            width: getModalWidth(),
-            margin: '1.75rem auto'
-          }}
-        >
-          <div 
-            className="modal-content shadow-lg" 
-            style={{ 
-              width: '100%',
-              borderRadius: '8px',
-              border: 'none',
-              animation: isOpen ? 'modalFadeIn 0.3s' : 'none'
-            }}
+    <div style={modalOverlayStyle} onClick={(e) => {
+      // Close when clicking outside the modal
+      if (e.target === e.currentTarget && !submitting) onClose();
+    }}>
+      <div style={modalContentStyle} onClick={e => e.stopPropagation()}>
+        <div style={modalHeaderStyle}>
+          <h3 style={modalTitleStyle}>
+            <FaComment style={{ marginRight: '8px', color: '#006A4E' }} /> 
+            Share Your Feedback
+          </h3>
+          <button 
+            style={closeButtonStyle} 
+            onClick={() => !submitting && onClose()} 
+            disabled={submitting}
           >
-            <div 
-              className="modal-header bg-light" 
-              style={{ 
-                borderBottom: '1px solid #dee2e6', 
-                padding: '1rem 1.5rem'
-              }}
-            >
-              <h5 className="modal-title fw-bold">
-                <FaComment className="me-2 text-primary" /> Share Your Feedback
-              </h5>
+            ×
+          </button>
+        </div>
+        
+        <div style={modalBodyStyle}>
+          {submitSuccess ? (
+            <div style={alertSuccessStyle}>
+              Thank you for your feedback! We appreciate your input.
+            </div>
+          ) : submitError ? (
+            <div style={alertErrorStyle}>
+              Sorry, there was a problem submitting your feedback. Please try again later.
+            </div>
+          ) : (
+            <form onSubmit={handleFeedbackSubmit} style={formStyle}>
+              <div style={formGroupStyle}>
+                <label htmlFor="feedbackName" style={labelStyle}>Name</label>
+                <input
+                  type="text"
+                  id="feedbackName"
+                  value={feedbackName}
+                  onChange={(e) => setFeedbackName(e.target.value)}
+                  placeholder="Your name (optional)"
+                  style={inputStyle}
+                />
+              </div>
+              
+              <div style={formGroupStyle}>
+                <label htmlFor="feedbackEmail" style={labelStyle}>Email</label>
+                <input
+                  type="email"
+                  id="feedbackEmail"
+                  value={feedbackEmail}
+                  onChange={(e) => setFeedbackEmail(e.target.value)}
+                  placeholder="Your email (optional)"
+                  style={inputStyle}
+                />
+              </div>
+              
+              <div style={formGroupStyle}>
+                <label htmlFor="feedbackText" style={labelStyle}>Your Feedback</label>
+                <textarea
+                  id="feedbackText"
+                  value={feedbackText}
+                  onChange={(e) => setFeedbackText(e.target.value)}
+                  placeholder="Please share your thoughts, suggestions, or report issues..."
+                  required
+                  style={textareaStyle}
+                  rows="5"
+                />
+              </div>
+              
               <button 
-                type="button" 
-                className="btn-close" 
-                onClick={() => !submitting && onClose()}
+                type="submit" 
+                style={submitting ? disabledButtonStyle : buttonStyle}
                 disabled={submitting}
-                aria-label="Close"
-              ></button>
-            </div>
-            
-            <div 
-              className="modal-body" 
-              style={{ 
-                padding: '1.5rem',
-                width: '100%'
-              }}
-            >
-              {submitSuccess ? (
-                <div className="alert alert-success d-flex align-items-center">
-                  <i className="bi bi-check-circle-fill me-2"></i>
-                  <div>
-                    Thank you for your feedback! We appreciate your input.
-                  </div>
-                </div>
-              ) : submitError ? (
-                <div className="alert alert-danger d-flex align-items-center">
-                  <i className="bi bi-exclamation-triangle-fill me-2"></i>
-                  <div>
-                    Sorry, there was a problem submitting your feedback. Please try again later.
-                  </div>
-                </div>
-              ) : (
-                <form onSubmit={handleFeedbackSubmit} style={{ width: '100%' }}>
-                  {/* Name input field */}
-                  <div style={{ marginBottom: '1rem', width: '100%' }}>
-                    <label htmlFor="feedbackName" style={labelStyle}>Name</label>
-                    <input
-                      type="text"
-                      id="feedbackName"
-                      value={feedbackName}
-                      onChange={(e) => setFeedbackName(e.target.value)}
-                      placeholder="Your name (optional)"
-                      style={inputStyle}
-                    />
-                  </div>
-                  
-                  {/* Email input field - now with consistent styling */}
-                  <div style={{ marginBottom: '1rem', width: '100%' }}>
-                    <label htmlFor="feedbackEmail" style={labelStyle}>Email</label>
-                    <input
-                      type="email"
-                      id="feedbackEmail"
-                      value={feedbackEmail}
-                      onChange={(e) => setFeedbackEmail(e.target.value)}
-                      placeholder="Your email (optional)"
-                      style={inputStyle}
-                    />
-                  </div>
-                  
-                  {/* Feedback text area */}
-                  <div style={{ marginBottom: '1.5rem', width: '100%' }}>
-                    <label htmlFor="feedbackText" style={labelStyle}>Your Feedback</label>
-                    <textarea
-                      id="feedbackText"
-                      rows="5"
-                      value={feedbackText}
-                      onChange={(e) => setFeedbackText(e.target.value)}
-                      placeholder="Please share your thoughts, suggestions, or report issues..."
-                      required
-                      style={{ 
-                        ...inputStyle,
-                        height: 'auto',
-                        minHeight: '120px',
-                        resize: 'vertical'
-                      }}
-                    ></textarea>
-                  </div>
-                  
-                  {/* Submit button */}
-                  <div style={{ width: '100%' }}>
-                    <button 
-                      type="submit" 
-                      className="btn btn-primary"
-                      disabled={submitting}
-                      style={{ 
-                        position: 'relative',
-                        padding: '0.75rem 1.5rem',
-                        fontSize: '1rem',
-                        width: '100%'
-                      }}
-                    >
-                      {submitting ? (
-                        <>
-                          <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                          Submitting...
-                        </>
-                      ) : 'Submit Feedback'}
-                    </button>
-                  </div>
-                </form>
-              )}
-            </div>
-          </div>
+              >
+                {submitting ? 'Submitting...' : 'Submit Feedback'}
+              </button>
+            </form>
+          )}
         </div>
       </div>
-      <div 
-        className={`modal-backdrop fade ${isOpen ? 'show' : ''}`}
-        style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          width: '100%',
-          height: '100%',
-          backgroundColor: 'rgba(0, 0, 0, 0.5)',
-          zIndex: 1040,
-          transition: 'opacity 0.15s linear'
-        }}
-        onClick={handleBackdropClick}
-      ></div>
-    </>
+    </div>
   );
 };
 
