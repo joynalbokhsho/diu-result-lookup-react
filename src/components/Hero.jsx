@@ -1,10 +1,13 @@
-import React from 'react';
-import { FaSearch, FaGraduationCap, FaExclamationTriangle } from 'react-icons/fa';
+import React, { useState, useEffect } from 'react';
+import { FaSearch, FaGraduationCap, FaExclamationTriangle, FaComment } from 'react-icons/fa';
 import ServerStatus from './ServerStatus';
+import Feedback from './Feedback';
 
 const Hero = ({ studentId, setStudentId, semesterId, setSemesterId, onSubmit, serverOnline, setServerOnline }) => {
+  const [showFeedbackModal, setShowFeedbackModal] = useState(false);
+
   // Set default semester to Spring 2025 if no semester is selected
-  React.useEffect(() => {
+  useEffect(() => {
     if (!semesterId) {
       setSemesterId('251');
     }
@@ -22,6 +25,12 @@ const Hero = ({ studentId, setStudentId, semesterId, setSemesterId, onSubmit, se
             Get instant access to your academic results from Daffodil International University.
             Simply enter your Student ID and select a semester to view your grades.
           </p>
+          <button 
+            className="btn btn-outline-secondary mt-2"
+            onClick={() => setShowFeedbackModal(true)}
+          >
+            <FaComment className="me-2" /> Give Feedback
+          </button>
         </div>
         <div className="col-lg-6">
           <div className="card form-card">
@@ -102,6 +111,12 @@ const Hero = ({ studentId, setStudentId, semesterId, setSemesterId, onSubmit, se
           </div>
         </div>
       </div>
+
+      {/* Feedback Modal */}
+      <Feedback 
+        isOpen={showFeedbackModal} 
+        onClose={() => setShowFeedbackModal(false)} 
+      />
     </section>
   );
 };

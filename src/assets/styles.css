@@ -727,6 +727,62 @@ footer.main-footer {
   }
 }
 
+/* ===== Feedback Modal Styles ===== */
+.feedback-modal-open {
+  overflow-y: hidden;
+}
+
+@keyframes modalFadeIn {
+  from { opacity: 0; transform: translateY(-30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.modal-backdrop {
+  transition: opacity 0.2s linear;
+}
+
+.modal-dialog {
+  max-width: 500px;
+  margin: 1.75rem auto;
+  display: flex;
+  align-items: center;
+  min-height: calc(100% - 3.5rem);
+}
+
+.modal-content {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  pointer-events: auto;
+  background-color: #fff;
+  background-clip: padding-box;
+  border-radius: 0.5rem;
+  outline: 0;
+}
+
+/* Responsive styles for mobile devices */
+@media (max-width: 576px) {
+  .modal-dialog {
+    margin: 1rem;
+    min-height: calc(100% - 2rem);
+  }
+  
+  .modal-content {
+    width: 100% !important;
+    margin: 0 !important;
+    max-width: 100% !important;
+  }
+  
+  .modal-body {
+    padding: 1rem !important;
+  }
+  
+  .form-control-lg {
+    font-size: 0.9rem !important;
+  }
+}
+
 @media print {
     @page {
         size: A4 portrait;
