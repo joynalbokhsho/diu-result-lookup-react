@@ -16,6 +16,8 @@ const Feedback = ({ isOpen, onClose }) => {
     if (isOpen) {
       setStep(1);
       setFeedbackType('suggestion');
+      setSubmitSuccess(false);
+      setSubmitError(false);
     }
   }, [isOpen]);
   
@@ -34,6 +36,12 @@ const Feedback = ({ isOpen, onClose }) => {
 
   const handleFeedbackSubmit = async (e) => {
     e.preventDefault();
+    
+    // Only submit if on step 3
+    if (step !== 3) {
+      return;
+    }
+    
     setSubmitting(true);
     setSubmitSuccess(false);
     setSubmitError(false);
@@ -133,11 +141,17 @@ const Feedback = ({ isOpen, onClose }) => {
   const nextStep = () => {
     if (step === 1 && !feedbackType) return;
     if (step === 2 && !feedbackText.trim()) return;
-    setStep(prev => prev + 1);
+    setStep(prev => Math.min(prev + 1, 3));
   };
   
   const prevStep = () => {
-    setStep(prev => prev - 1);
+    setStep(prev => Math.max(prev - 1, 1));
+  };
+  
+  // Handler for the final submit button click
+  const handleFinalSubmit = (e) => {
+    e.preventDefault();
+    handleFeedbackSubmit(e);
   };
   
   if (!isOpen) return null;
@@ -302,7 +316,8 @@ const Feedback = ({ isOpen, onClose }) => {
               </button>
             </div>
           ) : (
-            <form onSubmit={handleFeedbackSubmit}>
+            /* Changed this to just a regular div instead of a form to prevent auto-submission */
+            <div>
               {/* Step 1: Choose feedback type */}
               {step === 1 && (
                 <div style={{ 
@@ -560,7 +575,8 @@ const Feedback = ({ isOpen, onClose }) => {
                   </button>
                 ) : (
                   <button
-                    type="submit"
+                    type="button"
+                    onClick={handleFinalSubmit}
                     disabled={submitting}
                     style={{
                       flex: 1,
@@ -600,7 +616,7 @@ const Feedback = ({ isOpen, onClose }) => {
                   </button>
                 )}
               </div>
-            </form>
+            </div>
           )}
         </div>
       </div>
