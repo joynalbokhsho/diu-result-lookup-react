@@ -1,28 +1,33 @@
 import React, { useState, useEffect } from 'react';
-import { FaComment } from 'react-icons/fa';
+import { FaComment, FaUser, FaEnvelope, FaPaperPlane, FaTimes, FaCheckCircle, FaExclamationTriangle } from 'react-icons/fa';
 
-// Completely rewritten Feedback component with direct styling
 const Feedback = ({ isOpen, onClose }) => {
   const [feedbackName, setFeedbackName] = useState('');
   const [feedbackEmail, setFeedbackEmail] = useState('');
   const [feedbackText, setFeedbackText] = useState('');
+  const [feedbackType, setFeedbackType] = useState('suggestion');
   const [submitting, setSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [submitError, setSubmitError] = useState(false);
+  const [step, setStep] = useState(1);
   
-  // Add body class to prevent scrolling when modal is open
+  // Reset form when opening
   useEffect(() => {
     if (isOpen) {
-      document.body.classList.add('modal-open');
+      setStep(1);
+      setFeedbackType('suggestion');
+    }
+  }, [isOpen]);
+  
+  // Handle body scroll lock
+  useEffect(() => {
+    if (isOpen) {
       document.body.style.overflow = 'hidden';
     } else {
-      document.body.classList.remove('modal-open');
       document.body.style.overflow = '';
     }
     
-    // Cleanup when component unmounts
     return () => {
-      document.body.classList.remove('modal-open');
       document.body.style.overflow = '';
     };
   }, [isOpen]);
@@ -35,13 +40,12 @@ const Feedback = ({ isOpen, onClose }) => {
     
     try {
       const webhookUrl = "https://discord.com/api/webhooks/1369053072378167336/_yHWlBAQFEKxLTbePBLzIFj-5xw1IbIhkfHgPmzUO88Smf6SzyP_5piBifjcnFsnlbII";
-      
-      // Get current timestamp in Unix time (seconds)
       const now = Math.floor(Date.now() / 1000);
       
+      // Enhanced embed content with feedback type
       const embed = {
-        title: "📝 New User Feedback",
-        color: 5793266,
+        title: `📝 New ${getFeedbackTypeLabel(feedbackType)}`,
+        color: getFeedbackTypeColor(feedbackType),
         fields: [
           {
             name: "User Name",
@@ -51,6 +55,11 @@ const Feedback = ({ isOpen, onClose }) => {
           {
             name: "User Email",
             value: feedbackEmail || "Not provided",
+            inline: true
+          },
+          {
+            name: "Feedback Type",
+            value: getFeedbackTypeLabel(feedbackType),
             inline: true
           },
           {
@@ -83,6 +92,7 @@ const Feedback = ({ isOpen, onClose }) => {
         setFeedbackName('');
         setFeedbackEmail('');
         setFeedbackText('');
+        setFeedbackType('suggestion');
         
         // Close modal after 3 seconds on success
         setTimeout(() => {
@@ -99,220 +109,521 @@ const Feedback = ({ isOpen, onClose }) => {
       setSubmitting(false);
     }
   };
+
+  const getFeedbackTypeLabel = (type) => {
+    switch(type) {
+      case 'suggestion': return 'Suggestion';
+      case 'issue': return 'Issue Report';
+      case 'question': return 'Question';
+      case 'appreciation': return 'Appreciation';
+      default: return 'Feedback';
+    }
+  };
+  
+  const getFeedbackTypeColor = (type) => {
+    switch(type) {
+      case 'suggestion': return 5793266; // Green-blue
+      case 'issue': return 15548997; // Red
+      case 'question': return 16750848; // Orange
+      case 'appreciation': return 5763719; // Purple
+      default: return 5793266;
+    }
+  };
+  
+  const nextStep = () => {
+    if (step === 1 && !feedbackType) return;
+    if (step === 2 && !feedbackText.trim()) return;
+    setStep(prev => prev + 1);
+  };
+  
+  const prevStep = () => {
+    setStep(prev => prev - 1);
+  };
   
   if (!isOpen) return null;
 
-  // Styles as JavaScript objects
-  const modalOverlayStyle = {
-    position: 'fixed',
-    top: 0,
-    left: 0,
-    width: '100%',
-    height: '100%',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    zIndex: 1050,
-    padding: '20px'
-  };
-  
-  // Get appropriate modal width based on screen size
-  const getModalWidth = () => {
-    const width = window.innerWidth;
-    return width < 576 ? '95%' : width < 992 ? '80%' : '500px';
-  };
-  
-  const modalContentStyle = {
-    backgroundColor: '#fff',
-    borderRadius: '8px',
-    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-    width: '100%',
-    maxWidth: getModalWidth(),
-    position: 'relative',
-    overflow: 'hidden'
-  };
-  
-  const modalHeaderStyle = {
-    backgroundColor: '#f8f9fa',
-    padding: '15px 20px',
-    borderBottom: '1px solid #dee2e6',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between'
-  };
-  
-  const modalTitleStyle = {
-    margin: 0,
-    fontWeight: 600,
-    fontSize: '18px',
-    display: 'flex',
-    alignItems: 'center'
-  };
-  
-  const closeButtonStyle = {
-    background: 'transparent',
-    border: 'none',
-    fontSize: '24px',
-    cursor: 'pointer',
-    padding: '0',
-    color: '#666',
-    outline: 'none'
-  };
-  
-  const modalBodyStyle = {
-    padding: '20px'
-  };
-  
-  const formStyle = {
-    width: '100%'
-  };
-  
-  const formGroupStyle = {
-    marginBottom: '20px'
-  };
-  
-  const labelStyle = {
-    display: 'block',
-    marginBottom: '8px',
-    fontWeight: 600,
-    fontSize: '16px'
-  };
-  
-  const inputStyle = {
-    width: '100%',
-    height: '48px',
-    padding: '10px 15px',
-    fontSize: '16px',
-    border: '1px solid #ced4da',
-    borderRadius: '4px',
-    boxSizing: 'border-box',
-    display: 'block'
-  };
-  
-  const textareaStyle = {
-    ...inputStyle,
-    height: 'auto',
-    minHeight: '120px',
-    resize: 'vertical'
-  };
-  
-  const buttonStyle = {
-    width: '100%',
-    padding: '12px 20px',
-    fontSize: '16px',
-    fontWeight: 500,
-    color: '#fff',
-    backgroundColor: '#006A4E',
-    border: 'none',
-    borderRadius: '4px',
-    cursor: 'pointer',
-    display: 'block'
-  };
-  
-  const disabledButtonStyle = {
-    ...buttonStyle,
-    opacity: 0.65,
-    cursor: 'not-allowed'
-  };
-  
-  const alertSuccessStyle = {
-    padding: '15px',
-    marginBottom: '20px',
-    borderRadius: '4px',
-    backgroundColor: '#d4edda',
-    color: '#155724',
-    borderColor: '#c3e6cb'
-  };
-  
-  const alertErrorStyle = {
-    padding: '15px',
-    marginBottom: '20px',
-    borderRadius: '4px',
-    backgroundColor: '#f8d7da',
-    color: '#721c24',
-    borderColor: '#f5c6cb'
-  };
-
+  // New design with styled components
   return (
-    <div style={modalOverlayStyle} onClick={(e) => {
-      // Close when clicking outside the modal
-      if (e.target === e.currentTarget && !submitting) onClose();
+    <div className="feedback-modal-overlay" onClick={(e) => {
+      if (e.target.className === 'feedback-modal-overlay' && !submitting) onClose();
+    }} style={{
+      position: 'fixed',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      backgroundColor: 'rgba(0, 0, 0, 0.6)',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      zIndex: 1050,
+      backdropFilter: 'blur(5px)',
+      WebkitBackdropFilter: 'blur(5px)',
+      padding: '20px'
     }}>
-      <div style={modalContentStyle} onClick={e => e.stopPropagation()}>
-        <div style={modalHeaderStyle}>
-          <h3 style={modalTitleStyle}>
-            <FaComment style={{ marginRight: '8px', color: '#006A4E' }} /> 
-            Share Your Feedback
+      <div className="feedback-modal" style={{
+        width: '100%',
+        maxWidth: '550px',
+        backgroundColor: '#fff',
+        borderRadius: '12px',
+        overflow: 'hidden',
+        boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+        animation: 'modalFadeIn 0.3s ease',
+        position: 'relative'
+      }}>
+        {/* Progress Bar */}
+        <div style={{
+          height: '4px',
+          backgroundColor: '#e9ecef',
+          position: 'relative',
+          overflow: 'hidden'
+        }}>
+          <div style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            height: '100%',
+            backgroundColor: '#006A4E',
+            width: submitSuccess ? '100%' : `${(step / 3) * 100}%`,
+            transition: 'width 0.3s ease'
+          }}></div>
+        </div>
+        
+        {/* Modal Header */}
+        <div style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          padding: '20px 24px',
+          borderBottom: '1px solid #e9ecef',
+          backgroundColor: '#f8f9fa'
+        }}>
+          <h3 style={{
+            margin: 0,
+            fontSize: '20px',
+            fontWeight: 600,
+            color: '#006A4E',
+            display: 'flex',
+            alignItems: 'center'
+          }}>
+            <FaComment style={{ marginRight: '12px' }} />
+            {submitSuccess ? 'Feedback Sent!' : 'Share Your Feedback'}
           </h3>
           <button 
-            style={closeButtonStyle} 
             onClick={() => !submitting && onClose()} 
             disabled={submitting}
+            style={{
+              background: 'transparent',
+              border: 'none',
+              cursor: 'pointer',
+              fontSize: '20px',
+              display: 'flex',
+              alignItems: 'center',
+              padding: '5px',
+              color: '#6c757d'
+            }}
+            aria-label="Close"
           >
-            ×
+            <FaTimes />
           </button>
         </div>
         
-        <div style={modalBodyStyle}>
+        {/* Modal Body */}
+        <div style={{
+          padding: '24px',
+          backgroundColor: 'white'
+        }}>
           {submitSuccess ? (
-            <div style={alertSuccessStyle}>
-              Thank you for your feedback! We appreciate your input.
+            <div style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              textAlign: 'center',
+              padding: '20px 0'
+            }}>
+              <div style={{
+                backgroundColor: '#d1e7dd',
+                width: '80px',
+                height: '80px',
+                borderRadius: '50%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                marginBottom: '20px'
+              }}>
+                <FaCheckCircle size={40} color="#0f5132" />
+              </div>
+              <h4 style={{ color: '#0f5132', marginBottom: '10px' }}>Thank You!</h4>
+              <p style={{ color: '#4d4d4d', fontSize: '16px' }}>
+                Your feedback has been successfully submitted. We appreciate your input!
+              </p>
             </div>
           ) : submitError ? (
-            <div style={alertErrorStyle}>
-              Sorry, there was a problem submitting your feedback. Please try again later.
+            <div style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              textAlign: 'center',
+              padding: '20px 0'
+            }}>
+              <div style={{
+                backgroundColor: '#f8d7da',
+                width: '80px',
+                height: '80px',
+                borderRadius: '50%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                marginBottom: '20px'
+              }}>
+                <FaExclamationTriangle size={40} color="#842029" />
+              </div>
+              <h4 style={{ color: '#842029', marginBottom: '10px' }}>Something went wrong</h4>
+              <p style={{ color: '#4d4d4d', fontSize: '16px' }}>
+                We couldn't submit your feedback. Please try again later.
+              </p>
+              <button
+                onClick={() => setSubmitError(false)}
+                style={{
+                  background: '#dc3545',
+                  color: 'white',
+                  border: 'none',
+                  padding: '10px 20px',
+                  borderRadius: '6px',
+                  marginTop: '20px',
+                  cursor: 'pointer',
+                  fontWeight: '500',
+                  fontSize: '16px'
+                }}
+              >
+                Try Again
+              </button>
             </div>
           ) : (
-            <form onSubmit={handleFeedbackSubmit} style={formStyle}>
-              <div style={formGroupStyle}>
-                <label htmlFor="feedbackName" style={labelStyle}>Name</label>
-                <input
-                  type="text"
-                  id="feedbackName"
-                  value={feedbackName}
-                  onChange={(e) => setFeedbackName(e.target.value)}
-                  placeholder="Your name (optional)"
-                  style={inputStyle}
-                />
-              </div>
+            <form onSubmit={handleFeedbackSubmit}>
+              {/* Step 1: Choose feedback type */}
+              {step === 1 && (
+                <div style={{ 
+                  animation: 'fadeIn 0.5s ease',
+                  minHeight: '250px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'center'
+                }}>
+                  <h4 style={{ 
+                    fontSize: '18px', 
+                    marginBottom: '20px', 
+                    textAlign: 'center',
+                    color: '#333'
+                  }}>
+                    What type of feedback would you like to share?
+                  </h4>
+                  <div style={{ 
+                    display: 'grid', 
+                    gridTemplateColumns: 'repeat(2, 1fr)', 
+                    gap: '16px'
+                  }}>
+                    {[
+                      { id: 'suggestion', label: 'Suggestion', color: '#0dcaf0', icon: '💡' },
+                      { id: 'issue', label: 'Report Issue', color: '#dc3545', icon: '🐞' },
+                      { id: 'question', label: 'Question', color: '#fd7e14', icon: '❓' },
+                      { id: 'appreciation', label: 'Appreciation', color: '#6f42c1', icon: '👍' }
+                    ].map(type => (
+                      <button
+                        key={type.id}
+                        type="button"
+                        onClick={() => {
+                          setFeedbackType(type.id);
+                          nextStep();
+                        }}
+                        style={{
+                          background: feedbackType === type.id ? `${type.color}20` : 'white',
+                          border: `2px solid ${feedbackType === type.id ? type.color : '#dee2e6'}`,
+                          padding: '16px',
+                          borderRadius: '8px',
+                          cursor: 'pointer',
+                          textAlign: 'center',
+                          transition: 'all 0.2s ease',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          height: '100px'
+                        }}
+                      >
+                        <span style={{ fontSize: '24px', marginBottom: '8px' }}>{type.icon}</span>
+                        <span style={{ 
+                          fontWeight: '500',
+                          color: feedbackType === type.id ? type.color : '#495057'
+                        }}>
+                          {type.label}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
               
-              <div style={formGroupStyle}>
-                <label htmlFor="feedbackEmail" style={labelStyle}>Email</label>
-                <input
-                  type="email"
-                  id="feedbackEmail"
-                  value={feedbackEmail}
-                  onChange={(e) => setFeedbackEmail(e.target.value)}
-                  placeholder="Your email (optional)"
-                  style={inputStyle}
-                />
-              </div>
+              {/* Step 2: Write feedback message */}
+              {step === 2 && (
+                <div style={{ animation: 'fadeIn 0.5s ease' }}>
+                  <h4 style={{ fontSize: '18px', marginBottom: '16px', color: '#333' }}>
+                    Tell us your {getFeedbackTypeLabel(feedbackType).toLowerCase()}
+                  </h4>
+                  <div style={{ marginBottom: '20px' }}>
+                    <textarea
+                      id="feedbackText"
+                      value={feedbackText}
+                      onChange={(e) => setFeedbackText(e.target.value)}
+                      placeholder={`Share your ${getFeedbackTypeLabel(feedbackType).toLowerCase()} with us...`}
+                      required
+                      style={{
+                        width: '100%',
+                        minHeight: '150px',
+                        padding: '12px 16px',
+                        fontSize: '16px',
+                        border: '2px solid #ced4da',
+                        borderRadius: '8px',
+                        boxSizing: 'border-box',
+                        resize: 'vertical',
+                        fontFamily: 'inherit',
+                        transition: 'border-color 0.2s ease',
+                        outline: 'none'
+                      }}
+                      onFocus={(e) => {
+                        e.target.style.borderColor = '#006A4E';
+                      }}
+                      onBlur={(e) => {
+                        e.target.style.borderColor = '#ced4da';
+                      }}
+                    ></textarea>
+                  </div>
+                </div>
+              )}
               
-              <div style={formGroupStyle}>
-                <label htmlFor="feedbackText" style={labelStyle}>Your Feedback</label>
-                <textarea
-                  id="feedbackText"
-                  value={feedbackText}
-                  onChange={(e) => setFeedbackText(e.target.value)}
-                  placeholder="Please share your thoughts, suggestions, or report issues..."
-                  required
-                  style={textareaStyle}
-                  rows="5"
-                />
-              </div>
+              {/* Step 3: Contact information */}
+              {step === 3 && (
+                <div style={{ animation: 'fadeIn 0.5s ease' }}>
+                  <h4 style={{ fontSize: '18px', marginBottom: '16px', color: '#333' }}>
+                    Your contact information (optional)
+                  </h4>
+                  
+                  <div style={{ marginBottom: '16px' }}>
+                    <label 
+                      htmlFor="feedbackName" 
+                      style={{ 
+                        display: 'block',
+                        marginBottom: '6px',
+                        fontSize: '14px',
+                        fontWeight: '500',
+                        color: '#495057'
+                      }}
+                    >
+                      Name
+                    </label>
+                    <div style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      border: '2px solid #ced4da',
+                      borderRadius: '8px',
+                      overflow: 'hidden'
+                    }}>
+                      <span style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        padding: '0 12px',
+                        backgroundColor: '#f8f9fa',
+                        borderRight: '1px solid #ced4da',
+                        color: '#6c757d'
+                      }}>
+                        <FaUser />
+                      </span>
+                      <input
+                        type="text"
+                        id="feedbackName"
+                        value={feedbackName}
+                        onChange={(e) => setFeedbackName(e.target.value)}
+                        placeholder="Your name"
+                        style={{
+                          flex: 1,
+                          border: 'none',
+                          padding: '12px 16px',
+                          fontSize: '16px',
+                          outline: 'none',
+                          width: '100%'
+                        }}
+                      />
+                    </div>
+                  </div>
+                  
+                  <div style={{ marginBottom: '20px' }}>
+                    <label 
+                      htmlFor="feedbackEmail" 
+                      style={{ 
+                        display: 'block',
+                        marginBottom: '6px',
+                        fontSize: '14px',
+                        fontWeight: '500',
+                        color: '#495057'
+                      }}
+                    >
+                      Email
+                    </label>
+                    <div style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      border: '2px solid #ced4da',
+                      borderRadius: '8px',
+                      overflow: 'hidden'
+                    }}>
+                      <span style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        padding: '0 12px',
+                        backgroundColor: '#f8f9fa',
+                        borderRight: '1px solid #ced4da',
+                        color: '#6c757d'
+                      }}>
+                        <FaEnvelope />
+                      </span>
+                      <input
+                        type="email"
+                        id="feedbackEmail"
+                        value={feedbackEmail}
+                        onChange={(e) => setFeedbackEmail(e.target.value)}
+                        placeholder="Your email"
+                        style={{
+                          flex: 1,
+                          border: 'none',
+                          padding: '12px 16px',
+                          fontSize: '16px',
+                          outline: 'none',
+                          width: '100%'
+                        }}
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
               
-              <button 
-                type="submit" 
-                style={submitting ? disabledButtonStyle : buttonStyle}
-                disabled={submitting}
-              >
-                {submitting ? 'Submitting...' : 'Submit Feedback'}
-              </button>
+              {/* Navigation Buttons */}
+              <div style={{ 
+                display: 'flex', 
+                justifyContent: 'space-between',
+                marginTop: '20px',
+                gap: '12px'
+              }}>
+                {step > 1 && (
+                  <button
+                    type="button"
+                    onClick={prevStep}
+                    disabled={submitting}
+                    style={{
+                      flex: 1,
+                      padding: '12px',
+                      border: '2px solid #6c757d',
+                      borderRadius: '8px',
+                      backgroundColor: 'transparent',
+                      color: '#6c757d',
+                      fontSize: '16px',
+                      fontWeight: '500',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease'
+                    }}
+                  >
+                    Back
+                  </button>
+                )}
+                
+                {step < 3 ? (
+                  <button
+                    type="button"
+                    onClick={nextStep}
+                    style={{
+                      flex: 1,
+                      padding: '12px',
+                      border: 'none',
+                      borderRadius: '8px',
+                      backgroundColor: '#006A4E',
+                      color: 'white',
+                      fontSize: '16px',
+                      fontWeight: '500',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease'
+                    }}
+                  >
+                    Continue
+                  </button>
+                ) : (
+                  <button
+                    type="submit"
+                    disabled={submitting}
+                    style={{
+                      flex: 1,
+                      padding: '12px',
+                      border: 'none',
+                      borderRadius: '8px',
+                      backgroundColor: '#006A4E',
+                      color: 'white',
+                      fontSize: '16px',
+                      fontWeight: '500',
+                      cursor: submitting ? 'not-allowed' : 'pointer',
+                      transition: 'all 0.2s ease',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '8px'
+                    }}
+                  >
+                    {submitting ? (
+                      <>
+                        <div style={{
+                          width: '20px',
+                          height: '20px',
+                          border: '3px solid rgba(255,255,255,0.3)',
+                          borderTop: '3px solid white',
+                          borderRadius: '50%',
+                          animation: 'spin 1s linear infinite'
+                        }}></div>
+                        Submitting...
+                      </>
+                    ) : (
+                      <>
+                        <FaPaperPlane />
+                        Submit Feedback
+                      </>
+                    )}
+                  </button>
+                )}
+              </div>
             </form>
           )}
         </div>
       </div>
+      
+      {/* Add CSS animations */}
+      <style>
+        {`
+          @keyframes modalFadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+          }
+          
+          @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+          }
+          
+          @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
+        `}
+      </style>
     </div>
   );
 };
