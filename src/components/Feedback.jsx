@@ -47,7 +47,7 @@ const Feedback = ({ isOpen, onClose }) => {
     setSubmitError(false);
     
     try {
-      const webhookUrl = process.env.REACT_APP_FEEDBACK_WEBHOOK;
+      const webhookUrl = process.env.REACT_APP_FEEDBACK_WEBHOOK; 
       
       // Check if webhook URL is available
       if (!webhookUrl) {
