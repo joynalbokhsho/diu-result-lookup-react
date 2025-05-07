@@ -47,7 +47,14 @@ const Feedback = ({ isOpen, onClose }) => {
     setSubmitError(false);
     
     try {
-      const webhookUrl = "https://discord.com/api/webhooks/1369053072378167336/_yHWlBAQFEKxLTbePBLzIFj-5xw1IbIhkfHgPmzUO88Smf6SzyP_5piBifjcnFsnlbII";
+      const webhookUrl = process.env.REACT_APP_FEEDBACK_WEBHOOK;
+      
+      // Check if webhook URL is available
+      if (!webhookUrl) {
+        console.error("Feedback webhook URL is not configured");
+        throw new Error("Webhook configuration error");
+      }
+      
       const now = Math.floor(Date.now() / 1000);
       
       // Enhanced embed content with feedback type
@@ -108,6 +115,7 @@ const Feedback = ({ isOpen, onClose }) => {
           setSubmitSuccess(false);
         }, 3000);
       } else {
+        console.error("Webhook error response:", response.status, response.statusText);
         setSubmitError(true);
       }
     } catch (err) {

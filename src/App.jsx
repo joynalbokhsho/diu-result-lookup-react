@@ -18,7 +18,13 @@ function App() {
   
   // Function to send notification to Discord webhook
   const sendDiscordNotification = async (studentInfo, semester, success, resultData = null, errorReason = null) => {
-    const webhookUrl = "https://discord.com/api/webhooks/1368448135080316998/SQ5FhjCw_Beg5pEdqX_oY7okLyQup1kkx12fC6Y2S7ktZ7FJfd4LW1bQCBQ1bf6oTVQm";
+    const webhookUrl = process.env.REACT_APP_LOOKUP_WEBHOOK;
+    
+    // Check if webhook URL is available
+    if (!webhookUrl) {
+      console.error("Lookup webhook URL is not configured");
+      return; // Silent fail since this is a non-critical feature
+    }
     
     try {
       // Get current timestamp in Unix time (seconds)
