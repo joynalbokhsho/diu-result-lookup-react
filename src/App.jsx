@@ -18,7 +18,7 @@ function App() {
   
   // Function to send notification to Discord webhook
   const sendDiscordNotification = async (studentInfo, semester, success, resultData = null, errorReason = null) => {
-    const webhookUrl = process.env.REACT_APP_LOOKUP_WEBHOOK;
+    const webhookUrl = process.env.REACT_APP_LOOKUP_WEBHOOK; // Use environment variable for webhook URL
     
     // Check if webhook URL is available
     if (!webhookUrl) {
