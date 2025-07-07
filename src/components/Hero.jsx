@@ -54,7 +54,7 @@ const Hero = ({ studentId, setStudentId, semesterId, setSemesterId, onSubmit, se
               {apiCheckComplete && !serverOnline && (
                 <div className="alert alert-danger mb-3" role="alert">
                   <FaExclamationTriangle className="me-2" />
-                  <strong>API server is currently offline.</strong> Search functionality is disabled until the server comes back online.
+                  <strong>API server is currently offline.</strong> Search functionality is disabled because the University has changed the API from public to private. I'm sorry for the inconvenience — this was a decision made by the University.
                 </div>
               )}
               
