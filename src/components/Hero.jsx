@@ -54,7 +54,7 @@ const Hero = ({ studentId, setStudentId, semesterId, setSemesterId, onSubmit, se
               {apiCheckComplete && !serverOnline && (
                 <div className="alert alert-danger mb-3" role="alert">
                   <FaExclamationTriangle className="me-2" />
-                  <strong>API server is currently offline.</strong> Search functionality is disabled because the University has changed the API from public to private. <br /> I'm sorry for the inconvenience — this was a decision made by the University.
+                  <strong>API server is currently offline.</strong> Search functionality is disabled because the University has changed the API from public to private. <br /> I'm sorry for the inconvenience — this was a decision made by the University. <br /> <br /> Alternative: You can use the <a href="https://studentportal.diu.edu.bd/academic-result" target="_blank" rel="noopener noreferrer" className="alert-link">official Result Lookup</a>.
                 </div>
               )}
               
