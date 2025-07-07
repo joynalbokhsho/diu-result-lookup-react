@@ -3,7 +3,7 @@ import { FaSearch, FaGraduationCap, FaExclamationTriangle, FaComment } from 'rea
 import ServerStatus from './ServerStatus';
 import Feedback from './Feedback';
 
-const Hero = ({ studentId, setStudentId, semesterId, setSemesterId, onSubmit, serverOnline, setServerOnline }) => {
+const Hero = ({ studentId, setStudentId, semesterId, setSemesterId, onSubmit, serverOnline, setServerOnline, apiCheckComplete, onServerStatusChange }) => {
   const [showFeedbackModal, setShowFeedbackModal] = useState(false);
 
   // Set default semester to Spring 2025 if no semester is selected
@@ -12,6 +12,9 @@ const Hero = ({ studentId, setStudentId, semesterId, setSemesterId, onSubmit, se
       setSemesterId('251');
     }
   }, [semesterId, setSemesterId]);
+
+  // Determine if form should be disabled
+  const isFormDisabled = !apiCheckComplete || !serverOnline;
 
   return (
     <section className="hero-section">
@@ -38,10 +41,17 @@ const Hero = ({ studentId, setStudentId, semesterId, setSemesterId, onSubmit, se
               <h4 className="card-title">Search Your Result</h4>
               
               <div className="server-status-wrapper">
-                <ServerStatus onStatusChange={setServerOnline} />
+                <ServerStatus onStatusChange={onServerStatusChange} />
               </div>
               
-              {!serverOnline && (
+              {!apiCheckComplete && (
+                <div className="alert alert-info mb-3" role="alert">
+                  <FaExclamationTriangle className="me-2" />
+                  <strong>Checking API status...</strong> Please wait while we verify the server connection.
+                </div>
+              )}
+              
+              {apiCheckComplete && !serverOnline && (
                 <div className="alert alert-danger mb-3" role="alert">
                   <FaExclamationTriangle className="me-2" />
                   <strong>API server is currently offline.</strong> Search functionality is disabled until the server comes back online.
@@ -62,7 +72,7 @@ const Hero = ({ studentId, setStudentId, semesterId, setSemesterId, onSubmit, se
                       placeholder="Enter your student ID"
                       value={studentId}
                       onChange={(e) => setStudentId(e.target.value)}
-                      disabled={!serverOnline}
+                      disabled={isFormDisabled}
                       required
                     />
                   </div>
@@ -80,7 +90,7 @@ const Hero = ({ studentId, setStudentId, semesterId, setSemesterId, onSubmit, se
                       id="semesterId"
                       value={semesterId}
                       onChange={(e) => setSemesterId(e.target.value)}
-                      disabled={!serverOnline}
+                      disabled={isFormDisabled}
                       required
                     >
                       <option value="" disabled>Select Semester</option>
@@ -101,10 +111,12 @@ const Hero = ({ studentId, setStudentId, semesterId, setSemesterId, onSubmit, se
                 
                 <button 
                   type="submit" 
-                  className={`btn ${serverOnline ? 'btn-primary' : 'btn-secondary'} w-100`}
-                  disabled={!serverOnline}
+                  className={`btn ${serverOnline && apiCheckComplete ? 'btn-primary' : 'btn-secondary'} w-100`}
+                  disabled={isFormDisabled}
                 >
-                  <FaSearch className="me-2" /> {serverOnline ? 'Find Results' : 'API Server Offline'}
+                  <FaSearch className="me-2" /> 
+                  {!apiCheckComplete ? 'Checking API Status...' : 
+                   serverOnline ? 'Find Results' : 'API Server Offline'}
                 </button>
               </form>
             </div>

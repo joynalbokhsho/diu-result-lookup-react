@@ -60,8 +60,15 @@ const ServerStatus = ({ onStatusChange }) => {
     return () => clearInterval(intervalId);
   }, [onStatusChange]);
 
+  // Show loading state while checking
   if (isChecking) {
-    return null; // Don't show anything while first check is in progress
+    return (
+      <div className="server-status checking">
+        <span className="status-badge checking">
+          <FaServer /> Checking API Status...
+        </span>
+      </div>
+    );
   }
 
   return (

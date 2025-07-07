@@ -15,7 +15,14 @@ function App() {
   const [studentId, setStudentId] = useState('');
   const [semesterId, setSemesterId] = useState('');
   const [serverOnline, setServerOnline] = useState(true); // Add server status state
+  const [apiCheckComplete, setApiCheckComplete] = useState(false); // Track if initial API check is complete
   
+  // Function to handle server status changes
+  const handleServerStatusChange = (isOnline) => {
+    setServerOnline(isOnline);
+    setApiCheckComplete(true); // Mark API check as complete when we get the first result
+  };
+
   // Function to send notification to Discord webhook
   const sendDiscordNotification = async (studentInfo, semester, success, resultData = null, errorReason = null) => {
     const webhookUrl = process.env.REACT_APP_LOOKUP_WEBHOOK; // Use environment variable for webhook URL
@@ -385,6 +392,8 @@ function App() {
         onSubmit={handleSearch}
         serverOnline={serverOnline} 
         setServerOnline={setServerOnline} // Added setServerOnline prop here
+        apiCheckComplete={apiCheckComplete} // Pass the new state to Hero
+        onServerStatusChange={handleServerStatusChange} // Pass the new handler to Hero
       />
       
       <div className="container my-4">
