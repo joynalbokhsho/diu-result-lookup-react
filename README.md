@@ -12,12 +12,19 @@ A modern web application for Daffodil International University students to check
 - 🖨️ Professional print functionality
 - 💬 Personalized, grade-specific motivational messages
 - ✨ Clean, intuitive user interface
+- 🔍 Real-time API status monitoring
+- ⚡ Smart form disabling until API check completes
+- 🔗 Direct link to official DIU student portal as alternative
 
 ## Live Demo
 
 Visit the live application:
 - [Main Pages](https://diu.joynalbokhsho.me)
 - [Cloudflare Pages](https://diuresult.pages.dev/) (faster performance)
+
+## Important Notice
+
+**API Status**: The DIU University has changed their API from public to private access. When the API is unavailable, the application automatically disables the search functionality and provides a direct link to the [official DIU Student Portal](https://studentportal.diu.edu.bd/academic-result) as an alternative.
 
 ## Technologies Used
 
@@ -71,11 +78,22 @@ diu/
 
 ## Key Components
 
-- **Hero.jsx** - Search form and welcome section
+- **Hero.jsx** - Search form with API status checking and smart form disabling
+- **ServerStatus.jsx** - Real-time API status monitoring component
 - **ResultSection.jsx** - Displays the student's grades and information
 - **FeaturesSection.jsx** - Showcases application features
 - **Navbar.jsx** - Navigation header
 - **Footer.jsx** - Contains footer information and credits
+
+## API Status Monitoring
+
+The application includes intelligent API status monitoring:
+
+- **Initial Check**: Form is disabled until the first API status check completes
+- **Real-time Monitoring**: Continuous API status checking every 30 seconds
+- **Smart UI Updates**: Form automatically enables/disables based on API availability
+- **User Feedback**: Clear status indicators and helpful messages
+- **Alternative Access**: Direct link to official DIU portal when API is unavailable
 
 ## Deployment
 
